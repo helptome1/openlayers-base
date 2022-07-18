@@ -8,7 +8,8 @@
       <!--`<router-link>` 将呈现一个带有正确 `href` 属性的 `<a>` 标签-->
       <router-link to="/hello">Go to helloWorld</router-link>----
       <router-link to="/first">Go to firstApps</router-link>----
-      <router-link to="/learn">Go to learn</router-link>
+      <router-link to="/learn">Go to learn</router-link>----
+      <router-link to="/base">Go to Base</router-link>
     </ul>
     <!-- 路由匹配到的组件将渲染在这里 -->
     <router-view></router-view>
