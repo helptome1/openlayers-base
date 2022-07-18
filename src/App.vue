@@ -1,5 +1,5 @@
 <template>
-  <div id="cesiumContainer"></div> 
+  <div id="cesiumContainer"></div>
 </template>
 
 <script setup>
@@ -39,7 +39,9 @@ onMounted(() => {
       pitch: -0.66,
     },
   });
-  // 设置建筑物的模型
+  /**
+   * 1.加载建筑物的模型
+   */
   var city = viewer.scene.primitives.add(
     new Cesium.Cesium3DTileset({ url: Cesium.IonResource.fromAssetId(3839) })
   );
@@ -61,15 +63,18 @@ onMounted(() => {
   });
   // 把样式设置为样子
   city.style = heightStyle;
-  // GeoJson文件的加载
+  /**
+   * 2. 加载GeoJson文件,就是一个图形，需要把它贴到地图的表面。
+   */
   var neighborHoodsPromise = Cesium.GeoJsonDataSource.load(
-    "/assets/SampleData/sampleNeighborhoods.geojson"
+    "/public/assets/SampleData/sampleNeighborhoods.geojson"
   );
   var neighborhoods;
   neighborHoodsPromise.then((dataSource) => {
     // 将数据添加到查看器
     viewer.dataSources.add(dataSource);
     neighborhoods = dataSource.entities;
+    console.log("neighborhoods", neighborhoods);
     // 把地形放到地图的表面
     var neighborHoodsEntities = dataSource.entities.values;
     for (var i = 0; i < neighborHoodsEntities.length; i++) {
@@ -77,20 +82,21 @@ onMounted(() => {
       // 判断是否定义的多边形是否存在。
       if (Cesium.defined(entity.polygon)) {
         entity.name = entity.properties.neighborhood;
-        entity.polygon.material = Cesium.color.fromRandom({
+        // 区域的颜色随机
+        entity.polygon.material = Cesium.Color.fromRandom({
           red: 0.1,
           maximumGreen: 0.5,
           minimumBlue: 0.5,
-          alpha: 0.6
+          alpha: 0.6,
         });
 
-        entity.polygon.classificationType = Cesium.classificationType.TERRAIN;
+        entity.polygon.classificationType = Cesium.ClassificationType.TERRAIN;
         // 设置多边形的位置
         var polyPositions = entity.polygon.hierarchy.getValue(
           Cesium.JulianDate.now()
         ).positions;
         var polyCenter = Cesium.BoundingSphere.fromPoints(polyPositions).center;
-        // 地形的表面
+        // 放在地图的表面
         polyCenter = Cesium.Ellipsoid.WGS84.scaleToGeodeticSurface(polyCenter);
         entity.position = polyCenter;
 
@@ -99,9 +105,9 @@ onMounted(() => {
           text: entity.name,
           showBackground: true,
           scale: 0.6,
-          horizontalOrigin: Cesium.horizontalOrigin.CENTER,
-          verticalOrigin: cesium.verticalOrigin.BOTTOM,
-          distanceDisplayCondition: new Cesium.distanceDisplayCondition(
+          horizontalOrigin: Cesium.HorizontalOrigin.CENTER,
+          verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
+          distanceDisplayCondition: new Cesium.DistanceDisplayCondition(
             10,
             5000
           ),
@@ -111,9 +117,99 @@ onMounted(() => {
       }
     }
   });
+  /**
+   * kml文件用来地理标识
+   */
+  var kmlOptions = {
+    camera: viewer.scene.camera,
+    canvas: viewer.scene.canvas,
+    // 如果想把几何特征（多边形，线串和线性环）固定在地面上，则为true。
+    clampToGround: true,
+  };
+  // kml文件是google公司创建的一种地标性文件。
+  // 用于记录某一地点，或连接地点的时间、经度、维度、海拔等地理信息数据，供GE等油管软件使用。
+  // LOAD geocache points of interest from
+  var geocachePromise = Cesium.KmlDataSource.load(
+    "/public/assets/SampleData/sampleGeocacheLocations.kml",
+    kmlOptions
+  );
+  // 将 geocache 广告牌实体添加到场景中并为其设置样式
+  geocachePromise.then(function (dataSource) {
+    // 将新数据作为实体添加到查看器
+    viewer.dataSources.add(dataSource);
+
+    // 获取实体数组
+    var geocacheEntities = dataSource.entities.values;
+
+    for (var i = 0; i < geocacheEntities.length; i++) {
+      var entity = geocacheEntities[i];
+      if (Cesium.defined(entity.billboard)) {
+        // 调整垂直原点，使图钉位于地形上
+        entity.billboard.verticalOrigin = Cesium.VerticalOrigin.BOTTOM;
+        entity.billboard.image = "/public/assets/tagpark.png";
+        // 禁用标签以减少混乱
+        entity.label = undefined;
+        // 添加距离显示条件
+        entity.billboard.distanceDisplayCondition =
+          new Cesium.DistanceDisplayCondition(10.0, 20000.0);
+        // 以度为单位计算纬度和经度
+        var cartographicPosition = Cesium.Cartographic.fromCartesian(
+          entity.position.getValue(Cesium.JulianDate.now())
+        );
+        var latitude = Cesium.Math.toDegrees(cartographicPosition.latitude);
+        var longitude = Cesium.Math.toDegrees(cartographicPosition.longitude);
+        // 修改描述
+        var description =
+          '<table class="cesium-infoBox-defaultTable cesium-infoBox-defaultTable-lighter"><tbody>' +
+          "<tr><th>" +
+          "Longitude" +
+          "</th><td>" +
+          longitude.toFixed(5) +
+          "</td></tr>" +
+          "<tr><th>" +
+          "Latitude" +
+          "</th><td>" +
+          latitude.toFixed(5) +
+          "</td></tr>" +
+          "<tr><th>" +
+          "实时人流" +
+          "</th><td>" +
+          Math.floor(Math.random() * 20000) +
+          "</td></tr>" +
+          "<tr><th>" +
+          "安全等级" +
+          "</th><td>" +
+          Math.floor(Math.random() * 5) +
+          "</td></tr>" +
+          "</tbody></table>";
+        entity.description = description;
+      }
+    }
+  });
+  // 从czml文件加载飞行路径
+  var dronePromise = Cesium.CzmlDataSource.load('./assets/SampleData/sampleFlight.czml');
+
+  // 无人机实体
+  var drone;
+  dronePromise.then(function(dataSource){
+    viewer.dataSources.add(dataSource);
+    drone = dataSource.entities.getById('Aircraft/Aircraft1');
+    drone.model = {
+      uri:'./assets/SampleData/Models/CesiumDrone.gltf',
+      // uri:'./assets/SampleData/Models/ferrari2.gltf',
+      minimumPixelSize:128,
+      maximumScale:1000,
+      silhouetteColor:Cesium.Color.WHITE,
+      silhouetteSize:2
+    }
+
+    drone.orientation = new Cesium.VelocityOrientationProperty(drone.position);
+    drone.viewFrom = new Cesium.Cartesian3(0,-30,30)
+    viewer.clock.shouldAnimate = true;
+  })
+
 });
 </script>
-
 
 <style>
 #app {
