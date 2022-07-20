@@ -16,6 +16,7 @@ const routes = [
   { path: '/base', component: () => import("../components/BaseCesium.vue")},
   { path: '/openHot', component: () => import("../components/openLayersHot.vue")},
   { path: '/OlBase', component: () => import("../components/openLayerBase.vue")},
+  { path: '/OlVector', component: () => import("../components/OLVectorMap.vue")},
 ]
 // 3. 创建路由实例并传递 `routes` 配置
 // 你可以在这里输入更多的配置，但我们在这里
