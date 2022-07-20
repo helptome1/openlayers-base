@@ -1,5 +1,6 @@
 <template>
   <div id="map" ref="map"></div>
+  <button @click="leftMove">左移</button>
 </template>
 
 <script>
@@ -34,11 +35,24 @@ export default {
         ],
         // 设置显示地图的视图
         view: new View({
-          center: [0, 0], // 定义地图显示中心于经度0度，纬度0度处
-          zoom: 2, // 并且定义地图显示层级为2
+          // center: fromLonLat([104.065735, 35.659462]), // 定义地图显示中心于经度0度，纬度0度处
+          center: [104.06, 30.67],
+          zoom: 4.5, // 并且定义地图显示层级为2
+          // 指定投影使用EPSG:4326
+          projection: "EPSG:4326",
+          // minZoom: 4.5,
+          // maxZoom: 19,
         }),
         target: "map",
       });
+    },
+    leftMove() {
+      const view = this.map.getView();
+      const center = view.getCenter();
+      console.log(center);
+      center[0] -= 50000;
+      view.setCenter(center);
+      this.map.render();
     },
   },
   mounted() {

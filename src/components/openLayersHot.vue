@@ -8,6 +8,7 @@ import VectorSource from "ol/source/Vector";
 import { Tile as TileLayer, Heatmap as HeatmapLayer } from "ol/layer";
 import XYZ from "ol/source/XYZ";
 import { Map, View, Feature } from "ol";
+import { OSM } from "ol/source";
 import { Point } from "ol/geom";
 import { defaults as defaultControls } from "ol/control";
 import { fromLonLat } from "ol/proj";
@@ -34,12 +35,12 @@ export default {
                 // 设置地图图层
                 layers: [
                     // 创建一个使用Open Street Map地图源的瓦片图层
-                    // new ol.layer.Tile({source: new ol.source.OSM()}),
-                    new TileLayer({
-                        source: new XYZ({
-                            url:"http://map.geoq.cn/ArcGIS/rest/services/ChinaOnlineStreetPurplishBlue/MapServer/tile/{z}/{y}/{x}",
-                        }),
-                    }),
+                    new TileLayer({source: new OSM()}),
+                    // new TileLayer({
+                    //     source: new XYZ({
+                    //         url:"http://map.geoq.cn/ArcGIS/rest/services/ChinaOnlineStreetPurplishBlue/MapServer/tile/{z}/{y}/{x}",
+                    //     }),
+                    // }),
                 ],
                 // 
                 view: new View({
