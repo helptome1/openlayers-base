@@ -99,7 +99,7 @@ export default {
             featureProjection: "EPSG:3857", // 设定当前地图使用的feature的坐标系
           }),
         }),
-        style: 
+        
       });
       this.map.addLayer(layer);
     },

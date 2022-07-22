@@ -96,8 +96,7 @@ export default {
     addGeoJSON(src) {
       var layer = new VectorLayer({
         source: new VectorSource({
-          features: new GeoJSON().readFeatures(src, {
-            // 用readFeatures方法可以自定义坐标系
+          features: new GeoJSON().readFeatures(src, {// 用readFeatures方法可以自定义坐标系
             dataProjection: "EPSG:4326", // 设定JSON数据使用的坐标系
             featureProjection: "EPSG:3857", // 设定当前地图使用的feature的坐标系
           }),
