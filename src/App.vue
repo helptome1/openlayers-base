@@ -9,13 +9,15 @@
       <!-- <router-link to="/hello">Go to helloWorld</router-link>----
       <router-link to="/first">Go to firstApps</router-link>----
       <router-link to="/learn">Go to learn</router-link>------>
-      <router-link to="/base">Go to Base</router-link>---- 
-      <router-link to="/openHot">Go to OpenLayersHotMap</router-link>----
-      <router-link to="/OlBase">Go to OLBase</router-link>----
-      <router-link to="/OlVector">Go to OlVector</router-link>----
-      <router-link to="/OLWms">Go to OLWms</router-link>----
-      <router-link to="/OLImage">Go to OLImage</router-link>----
-      <router-link to="/OLWMTS">Go to OLWMTS</router-link>----
+      <!-- <router-link to="/base">Go to Base</router-link>----  -->
+      <router-link to="/openHot">OpenLayersHotMap</router-link>----
+      <router-link to="/OlBase">OLBase</router-link>----
+      <router-link to="/OlVector">OlVector</router-link>----
+      <router-link to="/OLWms">OLWms</router-link>----
+      <router-link to="/OLImage">OLImage</router-link>----
+      <router-link to="/OLWMTS">OLWMTS</router-link>----
+      <router-link to="/Baidu">BaiduMap</router-link>----
+      <router-link to="/LocalTile">LocalTile</router-link>----
     </ul>
     <!-- 路由匹配到的组件将渲染在这里 -->
     <router-view></router-view>

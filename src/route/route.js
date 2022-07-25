@@ -20,6 +20,8 @@ const routes = [
   { path: '/OLWms', component: () => import("../components/OLWms.vue")},
   { path: '/OLImage', component: () => import("../components/OLImage.vue")},
   { path: '/OLWMTS', component: () => import("../components/OLMapWMTS.vue")},
+  { path: '/Baidu', component: () => import("../components/OLMapBaidu.vue")},
+  { path: '/LocalTile', component: () => import("../components/OLLocalTile.vue")},
 ]
 // 3. 创建路由实例并传递 `routes` 配置
 // 你可以在这里输入更多的配置，但我们在这里

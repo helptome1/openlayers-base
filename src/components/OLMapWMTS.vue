@@ -20,7 +20,9 @@ import {
   ImageWMS,
   Image,
   ImageStatic,
+  TileImage,
   WMTS,
+  TileArcGISRest,
 } from "ol/source";
 import { Map as olMap, View, Feature, Overlay } from "ol";
 import { Point, Circle } from "ol/geom";
@@ -65,6 +67,21 @@ export default {
       list: [1],
       layers: [],
       overlay: null,
+      tiandituLink: {
+        vec_c: "http://t0.tianditu.gov.cn/vec_c/wmts?tk=",
+        vec_w: "http://t0.tianditu.gov.cn/vec_w/wmts?tk=",
+        cva_c: "http://t0.tianditu.gov.cn/cva_c/wmts?tk=",
+        cva_w: "http://t0.tianditu.gov.cn/cva_w/wmts?tk=",
+        img_c: "http://t0.tianditu.gov.cn/img_c/wmts?tk=",
+        img_w: "http://t0.tianditu.gov.cn/img_w/wmts?tk=",
+        cia_c: "http://t0.tianditu.gov.cn/cia_c/wmts?tk=",
+        cia_w: "http://t0.tianditu.gov.cn/cia_w/wmts?tk=",
+        ter_c: "http://t0.tianditu.gov.cn/ter_c/wmts?tk=",
+        ter_w: "http://t0.tianditu.gov.cn/ter_w/wmts?tk=",
+        cta_c: "http://t0.tianditu.gov.cn/cta_c/wmts?tk=",
+        cta_w: "http://t0.tianditu.gov.cn/cta_w/wmts?tk=",
+      },
+      tiandiTuTk: "20671382c71c11dac5d763aab0185146",
     };
   },
   methods: {
@@ -73,8 +90,12 @@ export default {
      */
     initMap() {
       //通过范围计算得到分辨率数组
+      // var projection = getProjection("EPSG:3857");
+      // 天地图使用EPSG: 4326坐标系
       var projection = getProjection("EPSG:4326");
+      // 获取此投影的有效范围。
       var projectionExtent = projection.getExtent();
+      // getWidth获取范围宽度。
       var size = getWidth(projectionExtent) / 256;
       var resolutions = new Array(14);
       var matrixIds = new Array(14);
@@ -85,11 +106,10 @@ export default {
       }
       // 数据源信息
       this.layers = [
-
-        // 加载WMTS协议的地图
+        // 加载天地图的WMTS协议的地图
         new TileLayer({
           source: new WMTS({
-            url: "http://t0.tianditu.gov.cn/vec_c/wmts?tk=20671382c71c11dac5d763aab0185146",
+            url: this.tiandituLink.vec_c + this.tiandiTuTk,
             layer: "vec", //注意每个图层这里不同
             //投影坐标系设置矩阵
             matrixSet: "c",
@@ -104,6 +124,25 @@ export default {
             wrapX: true,
           }),
         }),
+        // 加载arcgis的WMTS协议的地图
+        // new TileLayer({
+        //   source: new WMTS({
+        //     // url: "https://services.arcgisonline.com/arcgis/rest/services/World_Terrain_Base/MapServer",
+        //     url: "https://services.arcgisonline.com/arcgis/rest/services/Ocean/World_Ocean_Base/MapServer",
+        //     // layers: "NatGeo_World_Map",
+        //     // matrixSet: "default028mm", // 投影坐标系参数矩阵集
+        //     // format: "image/jpeg", // 图片格式
+        //     // projection: projection, // 投影坐标系
+        //     // style: "default",
+        //     // 投影坐标系
+        //     tileGrid: new WMTSTileGrid({
+        //       // 获取范围的左上角坐标。
+        //       origin: getTopLeft(projectionExtent),
+        //       resolutions: resolutions,
+        //       matrixIds: matrixIds,
+        //     }),
+        //   }),
+        // }),
       ];
       // 使用ol.Map来创建地图
       this.map = new olMap({
@@ -111,10 +150,11 @@ export default {
         layers: this.layers,
         // 设置显示地图的视图
         view: new View({
-          center: [0, 0],
-          zoom: 2,
+          center: transform([104, 30], "EPSG:4326", "EPSG:3857"),
+          zoom: 5,
+          maxZoom: 13,
+          minZoom: 0
         }),
-        overlays: [this.overlay],
         target: "map",
       });
     },
