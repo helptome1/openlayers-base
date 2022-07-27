@@ -68,12 +68,12 @@ export default {
       layers: [],
       overlay: null,
       tiandituLink: {
-        vec_c: "http://t0.tianditu.gov.cn/vec_c/wmts?tk=",
-        vec_w: "http://t0.tianditu.gov.cn/vec_w/wmts?tk=",
-        cva_c: "http://t0.tianditu.gov.cn/cva_c/wmts?tk=",
+        vec_c: "http://t1.tianditu.gov.cn/vec_c/wmts?tk=",
+        vec_w: "http://t1.tianditu.gov.cn/vec_w/wmts?tk=",
+        cva_c: "http://t3.tianditu.gov.cn/cva_c/wmts?tk=",
         cva_w: "http://t0.tianditu.gov.cn/cva_w/wmts?tk=",
-        img_c: "http://t0.tianditu.gov.cn/img_c/wmts?tk=",
-        img_w: "http://t0.tianditu.gov.cn/img_w/wmts?tk=",
+        img_c: "http://t2.tianditu.gov.cn/img_c/wmts?tk=",
+        img_w: "http://t3.tianditu.gov.cn/img_w/wmts?tk=",
         cia_c: "http://t0.tianditu.gov.cn/cia_c/wmts?tk=",
         cia_w: "http://t0.tianditu.gov.cn/cia_w/wmts?tk=",
         ter_c: "http://t0.tianditu.gov.cn/ter_c/wmts?tk=",
@@ -109,8 +109,8 @@ export default {
         // 加载天地图的WMTS协议的地图
         new TileLayer({
           source: new WMTS({
-            url: this.tiandituLink.vec_c + this.tiandiTuTk,
-            layer: "vec", //注意每个图层这里不同
+            url: this.tiandituLink.img_c + this.tiandiTuTk,
+            layer: "img", //注意每个图层这里不同
             //投影坐标系设置矩阵
             matrixSet: "c",
             format: "tiles",
@@ -124,16 +124,41 @@ export default {
             wrapX: true,
           }),
         }),
+        // new TileLayer({
+        //   source: new WMTS({
+        //     url: this.tiandituLink.vec_c + this.tiandiTuTk,
+        //     layer: "vec", //注意每个图层这里不同
+        //     //投影坐标系设置矩阵
+        //     matrixSet: "c",
+        //     format: "tiles",
+        //     style: "default",
+        //     projection: projection,
+        //     tileGrid: new WMTSTileGrid({
+        //       origin: getTopLeft(projectionExtent),
+        //       resolutions: resolutions,
+        //       matrixIds: matrixIds,
+        //     }),
+        //     wrapX: true,
+        //   }),
+        // }), 
         // 加载arcgis的WMTS协议的地图
         // new TileLayer({
         //   source: new WMTS({
         //     // url: "https://services.arcgisonline.com/arcgis/rest/services/World_Terrain_Base/MapServer",
-        //     url: "https://services.arcgisonline.com/arcgis/rest/services/Ocean/World_Ocean_Base/MapServer",
-        //     // layers: "NatGeo_World_Map",
-        //     // matrixSet: "default028mm", // 投影坐标系参数矩阵集
-        //     // format: "image/jpeg", // 图片格式
-        //     // projection: projection, // 投影坐标系
-        //     // style: "default",
+        //     url: "https://services.arcgisonline.com/arcgis/rest/services/World_Street_Map/MapServer/WMTS/", //世界街道地图23
+        //     // url: "https://services.arcgisonline.com/arcgis/rest/services/World_Physical_Map/MapServer/WMTS/",//仅有8层
+        //     // url: "https://services.arcgisonline.com/arcgis/rest/services/World_Shaded_Relief/MapServer/WMTS/", //仅有12层
+        //     // url: "https://services.arcgisonline.com/arcgis/rest/services/NatGeo_World_Map/MapServer/WMTS/",//自然地理世界地图16层
+        //     // url: "https://services.arcgisonline.com/arcgis/rest/services/USA_Topo_Maps/MapServer/WMTS/", //美国地形图15
+        //     // url: "https://services.arcgisonline.com/arcgis/rest/services/World_Imagery/MapServer/WMTS",// 世界影像图 23
+        //     // url: "https://services.arcgisonline.com/arcgis/rest/services/Elevation/World_Hillshade_Dark/MapServer/WMTS/",//世界山阴暗 23
+        //     // url: "https://services.arcgisonline.com/arcgis/rest/services/Elevation/World_Hillshade/MapServer/WMTS/",
+        //     // url: "https://services.arcgisonline.com/arcgis/rest/services/Reference/World_Boundaries_and_Places_Alternate/MapServer/WMTS/",//标记矢量图
+        //     // url: "https://services.arcgisonline.com/arcgis/rest/services/Reference/World_Boundaries_and_Places/MapServer/WMTS/",//矢量标注图
+        //     // url: "https://services.arcgisonline.com/arcgis/rest/services/Reference/World_Transportation/MapServer/WMTS/", //交通
+        //     // url: "https://services.arcgisonline.com/arcgis/rest/services/Reference/World_Reference_Overlay/MapServer/WMTS/", //13世界参考覆盖
+        //     // url: "https://services.arcgisonline.com/arcgis/rest/services/Specialty/DeLorme_World_Base_Map/MapServer/WMTS/", //德洛姆世界底图基础底图。
+        //     // url: "https://services.arcgisonline.com/arcgis/rest/services/Specialty/World_Navigation_Charts/MapServer/WMTS/",//世界导航图
         //     // 投影坐标系
         //     tileGrid: new WMTSTileGrid({
         //       // 获取范围的左上角坐标。
@@ -141,8 +166,10 @@ export default {
         //       resolutions: resolutions,
         //       matrixIds: matrixIds,
         //     }),
+        //     wrapX: true,
+        //     crossOrigin: "anonymous",
         //   }),
-        // }),
+        // })
       ];
       // 使用ol.Map来创建地图
       this.map = new olMap({
@@ -150,13 +177,46 @@ export default {
         layers: this.layers,
         // 设置显示地图的视图
         view: new View({
-          center: transform([104, 30], "EPSG:4326", "EPSG:3857"),
-          zoom: 5,
-          maxZoom: 13,
-          minZoom: 0
+          center: transform([108.9421, 34.2244], "EPSG:4326", "EPSG:3857"),
+          zoom: 10,
+          maxZoom: 19,
+          minZoom: 0,
         }),
         target: "map",
       });
+      this.addPoint()
+    },
+    addPoint() {
+      /**
+       * 创建一个活动图标需要的feature，并设置位置。
+       */
+      const activityLayer = new VectorLayer({
+        source: new VectorSource(),
+      });
+
+      // 创建一个活动图标需要的Feature，并设置位置
+      var activity = new Feature({
+        geometry: new Point(
+          transform([108.9421, 34.2244], "EPSG:4326", "EPSG:3857")
+          // [108.9421, 34.2244]
+        ),
+      });
+      // 设置Feature的样式，
+      activity.setStyle(
+        new Style({
+          image: new Icon({
+            src: "../../public/image/blueIcon.png",
+            anchor: [0.5, 60],
+            anchorOrigin: "top-right",
+            anchorXUnits: "fraction",
+            anchorYUnits: "pixels",
+            offsetOrigin: "top-right",
+            // scale: 1,
+          }),
+        })
+      );
+      activityLayer.getSource().addFeature(activity);
+      this.map.addLayer(activityLayer);
     },
   },
   mounted() {

@@ -1,16 +1,5 @@
 <template>
   <div id="map" ref="map"></div>
-  <!-- <div>
-    <input name="seq" type="radio" value="" @change="upOsm($event)" />底图最上
-    <input
-      name="seq"
-      type="radio"
-      value=""
-      checked="checked"
-      @change="upCircle($event)"
-    />圆最上
-    <input name="seq" type="radio" value="" @change="upPoint($event)" />点最上
-  </div> -->
 </template>
 
 <script>
@@ -85,67 +74,81 @@ export default {
      * 初始化地图
      */
     initMap() {
-      //通过范围计算得到分辨率数组
-      var projection = getProjection("EPSG:3857");
-      // 获取此投影的有效范围。
-      var projectionExtent = projection.getExtent();
-      // getWidth获取范围宽度。
-      var size = getWidth(projectionExtent) / 256;
-      var resolutions = new Array(10);
-      var matrixIds = new Array(10);
-      for (var z = 0; z < 10; ++z) {
-        //分辨率和matrixIds数组
-        resolutions[z] = size / Math.pow(2, z);
-        matrixIds[z] = z;
+      const centerLatLng = [116.391266, 39.907359]; //北京天安门wgs84经纬度
+      const projectionString = "EPSG:3857";
+      // 自定义分辨率
+      const resolutions = [];
+
+      // 计算使用的分辨率
+      for (let i = 0; i < 19; i++) {
+        resolutions[i] = 2 ** (18 - i);
       }
 
-      /**
-       * 加载本地瓦片地图。或者服务器瓦片地图数据
-       */
-      let OffilineMapLayer = new TileLayer({
-        source: new XYZ({
-          url: "http://172.16.29.100:9800/gis/bj/tiles/{z}/{x}/{y}.png",
-          projection: "EPSG:3857",
-        }),
-      });
-      // 高德地图层
-      var gaodeMapLayer = new TileLayer({
-        source: new XYZ({
-          url: "http://wprd0{1-4}.is.autonavi.com/appmaptile?x={x}&y={y}&z={z}&lang=zh_cn&size=1&scl=1&style=7",
-        }),
-      });
       // 数据源信息
       this.layers = [
-        // 加载WMTS协议的地图
-        // new TileLayer({
-        //   source: OffilineMapLayer,
-        // }),
-        // 本地
-        OffilineMapLayer,
-        // gaodeMapLayer
+        new TileLayer({
+          source: new XYZ({
+            tileSize: 256,
+            tileUrlFunction: function (xyz, obj1, obj2) {
+              if (!xyz) {
+                return "";
+              }
+              var z = xyz[0];
+              var x = xyz[1];
+              var y = xyz[2]; // 腾讯平面图
+              return (
+                "http://rt1.map.gtimg.com/realtimerender?z=" +
+                z +
+                "&x=" +
+                x +
+                "&y=" +
+                y +
+                "&type=vector&style=0&v=1.1.2"
+              );
+              // 腾讯地形图
+
+              // return "https://p3.map.gtimg.com/sateTiles/" + z + "/" + Math.floor(x / 16.0) + "/" + Math.floor(y / 16.0) + "/" + x + "_" + y + ".jpg?version=230"
+            },
+          }),
+          wrapX: false,
+        }),
       ];
+      // function(xyz, obj1, obj2) {
+      //     if (!xyz) {
+      //       return "";
+      //     }
+      //     var z = xyz[0];
+      //     var x = xyz[1];
+      //     var y = xyz[2]; // 腾讯平面图
+      //     return (
+      //       "http://rt1.map.gtimg.com/realtimerender?z=" +
+      //       z +
+      //       "&x=" +
+      //       x +
+      //       "&y=" +
+      //       y +
+      //       "&type=vector&style=0&v=1.1.2"
+      //     );
+      //     // 腾讯地形图
+      //     //return "https://p3.map.gtimg.com/sateTiles/" + z + "/" + Math.floor(x / 16.0) + "/" + Math.floor(y / 16.0) + "/" + x + "_" + y + ".jpg?version=230"
+      //   },
       // 使用ol.Map来创建地图
       this.map = new olMap({
         // 地图图层
         layers: this.layers,
         // 设置显示地图的视图
         view: new View({
-          // center: transform([108.9421, 34.2244], "EPSG:4326", "EPSG:3857"),//西安小寨
-          center: transform([116.411794, 39.9068], "EPSG:4326", "EPSG:3857"),//北京
-          // projection: "EPSG:3857",
-          zoom: 10,
-          // maxZoom: 13,
-          maxZoom: 14,
-          minZoom: 0,
-          // 鼠标每次滚动一个图层
-          constrainResolution: true,
+          resolutions, // 分辨率
+          // projection: this.projectionString,
+          center: fromLonLat(centerLatLng),
+          zoom: 2,
+          // minZoom: 4,
         }),
         target: "map",
       });
-      this.map.on("moveend", function (e) {
-        console.log("e", this.getView().getZoom());
-      });
+      // this.addPoint();
     },
+
     // 异步加载矢量地图数据
     addGeoJSON(src) {
       var layer = new VectorLayer({
@@ -159,7 +162,45 @@ export default {
       });
       this.map.addLayer(layer);
     },
+    // 使用axios获取数据
+    // getGeoJson() {
+    //   axios.get("../../public/geojson_sx/140000.geoJson").then((res) => {
+    //     // this.addGeoJSON(res.data);
+    //     console.log("res", res);
+    //   });
+    // },
+    addPoint() {
+      /**
+       * 创建一个活动图标需要的feature，并设置位置。
+       */
+      const activityLayer = new VectorLayer({
+        source: new VectorSource(),
+      });
 
+      // 创建一个活动图标需要的Feature，并设置位置
+      var activity = new Feature({
+        geometry: new Point(
+          // transform([108.9421, 34.2244], "EPSG:4326", "EPSG:3857")
+          [108.9421, 34.2244]
+        ),
+      });
+      // 设置Feature的样式，
+      activity.setStyle(
+        new Style({
+          image: new Icon({
+            src: "../../public/image/blueIcon.png",
+            anchor: [0.5, 60],
+            anchorOrigin: "top-right",
+            anchorXUnits: "fraction",
+            anchorYUnits: "pixels",
+            offsetOrigin: "top-right",
+            // scale: 1,
+          }),
+        })
+      );
+      activityLayer.getSource().addFeature(activity);
+      this.map.addLayer(activityLayer);
+    },
   },
   mounted() {
     this.initMap(); //初始化地图

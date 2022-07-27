@@ -6,36 +6,90 @@
 <script>
 import "ol/ol.css";
 import VectorSource from "ol/source/Vector";
-import { Tile as TileLayer, Heatmap as HeatmapLayer, Vector as VectorLayer} from "ol/layer";
+import {
+  Tile as TileLayer,
+  Heatmap as HeatmapLayer,
+  Vector as VectorLayer,
+} from "ol/layer";
 // import XYZ from "ol/source/XYZ";
 import { OSM, XYZ, Vector } from "ol/source";
 import { Map as olMap, View, Feature } from "ol";
 import { Style } from "ol/style";
 import { Point } from "ol/geom";
 import { defaults as defaultControls } from "ol/control";
-import { fromLonLat, transform } from "ol/proj";
+import {
+  get as getProjection,
+  fromLonLat,
+  transform,
+  addProjection,
+  addCoordinateTransforms,
+} from "ol/proj";
+import Projection from "ol/proj/Projection";
 import Text from "ol/style/Text";
 import Icon from "ol/style/Icon";
+
+// 引入高德坐标变换
+import projzh from "./js/gaodeTranslate";
+import {
+  gcj02tobd09,
+  bd09togcj02,
+  gcj02towgs84,
+  wgs84togcj02,
+} from "./js/convertTools";
+
 // import ol from "ol";
 
 export default {
   data() {
     return {
       map: null,
+      gcjMecator: null,
     };
   },
   methods: {
+    // 高德地图坐标系转换函数,
+    gaodeTranslate() {
+      // 规定gcj-02的范围
+      const gcj02Extent = [
+        -20037508.342789244, -20037508.342789244, 20037508.342789244,
+        20037508.342789244,
+      ];
+      // 注册一个gcj-02的投影
+      this.gcjMecator = new Projection({
+        code: "GCJ-02",
+        extent: gcj02Extent,
+        units: "m",
+      });
+      addProjection(this.gcjMecator);
+      // 注册坐标变换的函数,主要是为了在4326和3857坐标系和新建的gcjMecator坐标系之间建立一种坐标转换关系，
+      // 当我们用传统的wgs84坐标时，系统自动映射到gcjMecator坐标系
+      addCoordinateTransforms(
+        "EPSG:4326",
+        this.gcjMecator,
+        projzh.ll2gmerc,
+        projzh.gmerc2ll
+      );
+      addCoordinateTransforms(
+        "EPSG:3857",
+        this.gcjMecator,
+        projzh.smerc2gmerc,
+        projzh.gmerc2smerc
+      );
+    },
     /**
      * 初始化地图
      */
     initMap() {
+      this.gaodeTranslate();
       // 高德地图层
       var gaodeMapLayer = new TileLayer({
         source: new XYZ({
-          url: "http://wprd0{1-4}.is.autonavi.com/appmaptile?x={x}&y={y}&z={z}&lang=zh_cn&size=1&scl=1&style=7",
+          projection: 'GCJ-02',
+          url: "http://wprd0{1-4}.is.autonavi.com/appmaptile?x={x}&y={y}&z={z}&lang=zh_cn&size=1&scl=2&style=6",
+          wrapX: false,
         }),
       });
-      var position = transform([104.06667, 30.66667], "EPSG:4326", "EPSG:3857")
+      var position = transform([108.9421, 34.2244], "EPSG:4326", "EPSG:3857");
       // 使用ol.Map来创建地图
       this.map = new olMap({
         // 地图图层
@@ -47,15 +101,11 @@ export default {
         ],
         // 设置显示地图的视图
         view: new View({
-          // center: fromLonLat([104.065735, 35.659462]), // 定义地图显示中心于经度0度，纬度0度处
-          // center: [104.06, 30.67],
-          center: position,
-          // zoom: 4.5, // 并且定义地图显示层级为2
-          zoom: 7,
+          center: fromLonLat([108.9421, 34.2244]), // 定义地图显示中心于经度0度，纬度0度处
+          // center: position,
+          zoom: 14,
           // 指定投影使用EPSG:4326
           // projection: "EPSG:4326",
-          // minZoom: 4.5,
-          // maxZoom: 19,
         }),
         target: "map",
       });
@@ -68,20 +118,26 @@ export default {
 
       // 创建一个活动图标需要的Feature，并设置位置
       var activity = new Feature({
-        geometry: new Point([104.06667, 30.66667]),
+        geometry: new Point(
+          transform([108.9421, 34.2244], "EPSG:4326", "EPSG:3857")
+        ),
       });
       // 设置Feature的样式，
       activity.setStyle(
         new Style({
           image: new Icon({
-            src: "../../public/image/favicon.png",
-            anchor: [0, 1],
-            scale: 1,
+            src: "../../public/image/blueIcon.png",
+            anchor: [0.5, 60],
+            anchorOrigin: "top-right",
+            anchorXUnits: "fraction",
+            anchorYUnits: "pixels",
+            offsetOrigin: "top-right",
+            // scale: 1,
           }),
         })
       );
       activityLayer.getSource().addFeature(activity);
-      this.map.addLayer(activityLayer)
+      this.map.addLayer(activityLayer);
     },
     leftMove() {
       const view = this.map.getView();

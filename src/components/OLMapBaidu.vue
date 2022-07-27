@@ -44,7 +44,6 @@ import * as olCoordinate from "ol/coordinate";
 // 选中图层交互
 import { Select as InteractionSelect } from "ol/interaction";
 import Attribution from "ol/control/Attribution";
-import Projection from "ol/proj/Projection";
 
 /**
  * 加载WMTS所需
@@ -54,13 +53,17 @@ import {
   fromLonLat,
   transform,
   addProjection,
+  addCoordinateTransforms
 } from "ol/proj";
+import Projection from "ol/proj/Projection";
+
 import { register } from "ol/proj/proj4";
-import { getTopLeft, getWidth } from "ol/extent";
+import { getTopLeft, getWidth, applyTransform } from "ol/extent";
 import WMTSTileGrid from "ol/tilegrid/WMTS";
 // 加载坐标系转换函数
 import proj4 from "proj4/dist/proj4";
-
+// 百度地图坐标系
+import projzh from "projzh";
 // 导入axios
 import axios from "axios";
 
@@ -80,9 +83,28 @@ export default {
   },
   methods: {
     /**
+     * 百度坐标系转换
+     */
+    baiduProj() {
+        let center = [108.94238,34.26097]; //西安钟楼
+        // let center = [108.964031,34.217865]; //西安大雁塔
+        // let center = [116.411794, 39.9068]; //北京东单
+        let extent = [72.004, 0.8293, 137.8347, 55.8271];
+        let baiduMercator = new Projection({
+            code: 'bd-09',
+            extent: applyTransform(extent, projzh.ll2bmerc),
+            units: 'm'
+        });
+        addProjection(baiduMercator);
+        addCoordinateTransforms('EPSG:4326', baiduMercator, projzh.ll2bmerc, projzh.bmerc2ll);
+        addCoordinateTransforms('EPSG:3857', baiduMercator, projzh.smerc2bmerc, projzh.bmerc2smerc);
+    },
+
+    /**
      * 初始化地图
      */
     initMap() {
+      this.baiduProj()
       //通过范围计算得到分辨率数组
       // 定义一些常量
       // const projection = getProjection("EPSG:4326");
@@ -97,28 +119,33 @@ export default {
       }
 
       // 百度地图投影调整
-      proj4.defs("EPSG:4008", "+proj=longlat +ellps=clrk66 +no_defs");
-      proj4.defs(
-        "BD-MC",
-        "+proj=merc +lon_0=0 +units=m +ellps=clrk66 +no_defs"
-      );
-      register(proj4);
+      // proj4.defs("EPSG:4008", "+proj=longlat +ellps=clrk66 +no_defs");
+      // proj4.defs(
+      //   "BD-MC",
+      //   "+proj=merc +lon_0=0 +units=m +ellps=clrk66 +no_defs"
+      // );
+      // register(proj4);
 
-      // 百度地图参数
-      const resolutions2 = [];
-      for (let z = 0; z < 19; ++z) {
-        resolutions2[z] = Math.pow(2, 18 - z);
+
+       // 自定义分辨率和瓦片坐标系
+      var resolutions2 = [];
+      var maxZoom = 19;
+
+      // 计算百度使用的分辨率
+      for(var i=0; i<=maxZoom; i++){
+          resolutions2[i] = Math.pow(2, 18-i); //计算每一层的分辨率，存进 resolutions 中
       }
-      let tilegrid = new TileGrid({
-        origin: [0, 0],
-        resolutions: resolutions2,
+      var tilegrid  = new TileGrid({
+          origin: [0,0],    // 设置原点坐标
+          resolutions: resolutions2    // 设置分辨率
       });
+
       // 百度矢量底图地图服务
       /*加载百度地图离线瓦片不能用ol.source.XYZ，ol.source.XYZ针对谷歌地图（注意：是谷歌地图）而设计，
              而百度地图与谷歌地图使用了不同的投影、分辨率和瓦片网格。因此这里使用ol.source.TileImage来自行指定
            投影、分辨率、瓦片网格。*/
       let source0 = new TileImage({
-        projection: "BD-MC",
+        projection: "bd-09",
         tileGrid: tilegrid,
         tileUrlFunction: function (tileCoord, pixelRatio, proj) {
           if (!tileCoord) {
@@ -236,13 +263,49 @@ export default {
         layers: this.layers,
         // 设置显示地图的视图
         view: new View({
-          center: transform([108.94678, 34.22287], "EPSG:4326", "EPSG:3857"),
-          zoom: 13,
-          maxZoom: 17,
-          // projection: "EPSG:4326"
+          // center: transform([108.9421, 34.2244], "EPSG:4326", "EPSG:3857"),
+          center: [108.9421, 34.2244],
+          zoom: 16,
+          maxZoom: 19,
+          projection: "EPSG:4326"
         }),
         target: "map",
       });
+
+      // 添加点坐标
+      this.addPoint()
+    },
+    addPoint() {
+      /**
+       * 创建一个活动图标需要的feature，并设置位置。
+       */
+      const activityLayer = new VectorLayer({
+        source: new VectorSource(),
+      });
+
+      // 创建一个活动图标需要的Feature，并设置位置
+      var activity = new Feature({
+        geometry: new Point(
+          // transform([108.9421, 34.2244], "EPSG:4326", "EPSG:3857")
+          [108.9421, 34.2244]
+        ),
+      });
+      // 设置Feature的样式，
+      activity.setStyle(
+        new Style({
+          image: new Icon({
+            src: "../../public/image/blueIcon.png",
+            anchor: [0.5, 60],
+            anchorOrigin: "top-right",
+            anchorXUnits: "fraction",
+            anchorYUnits: "pixels",
+            offsetOrigin: "top-right",
+            // scale: 1,
+          }),
+        })
+      );
+      activityLayer.getSource().addFeature(activity);
+      this.map.addLayer(activityLayer);
     },
   },
   mounted() {
