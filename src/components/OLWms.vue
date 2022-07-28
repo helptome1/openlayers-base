@@ -39,6 +39,14 @@ import TileGrid from "ol/tilegrid/TileGrid";
 
 // 导入axios
 import axios from "axios";
+// 导入公共模块
+import {
+  addTdtWmtsLayer,
+  addWmtsLayer,
+  addOSMLayer,
+  addXYZLayer,
+  addWMSLayer,
+} from "./js/commonApi";
 
 /**
  * 矢量图
@@ -66,15 +74,15 @@ export default {
         new TileLayer({
           source: new OSM(),
         }),
-        new ImageLayer({
-          extent: [-13884991, 2870341, -7455066, 6338219],
-          source: new ImageWMS({
-            url: "https://ahocevar.com/geoserver/wms",
-            params: { LAYERS: "topp:states" },
-            ratio: 1,
-            serverType: "geoserver",
-          }),
-        }),
+        // new ImageLayer({
+        //   extent: [-13884991, 2870341, -7455066, 6338219],
+        //   source: new ImageWMS({
+        //     url: "https://ahocevar.com/geoserver/wms",
+        //     params: { LAYERS: "topp:states" },
+        //     ratio: 1,
+        //     serverType: "geoserver",
+        //   }),
+        // }),
       ];
 
       // 使用ol.Map来创建地图
@@ -88,6 +96,7 @@ export default {
         }),
         target: "map",
       });
+      const wmsLayer = addWMSLayer(this.map, 'https://ahocevar.com/geoserver/wms', 'topp:states');
     },
   },
   mounted() {

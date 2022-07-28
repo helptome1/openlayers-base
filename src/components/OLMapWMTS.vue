@@ -55,6 +55,16 @@ import WMTSTileGrid from "ol/tilegrid/WMTS";
 // 导入axios
 import axios from "axios";
 
+// 导入公共模块
+import {
+  addTdtWmtsLayer,
+  addWmtsLayer,
+  addOSMLayer,
+  addXYZLayer,
+  addWMSLayer,
+  changeTheme
+} from "./js/commonApi";
+
 export default {
   data() {
     return {
@@ -82,6 +92,23 @@ export default {
         cta_w: "http://t0.tianditu.gov.cn/cta_w/wmts?tk=",
       },
       tiandiTuTk: "20671382c71c11dac5d763aab0185146",
+      ArcGisLink: [
+        "https://services.arcgisonline.com/arcgis/rest/services/World_Terrain_Base/MapServer",
+        "https://services.arcgisonline.com/arcgis/rest/services/World_Street_Map/MapServer/WMTS/", //世界街道地图23
+        "https://services.arcgisonline.com/arcgis/rest/services/World_Physical_Map/MapServer/WMTS/", //仅有8层
+        "https://services.arcgisonline.com/arcgis/rest/services/World_Shaded_Relief/MapServer/WMTS/", //仅有12层
+        "https://services.arcgisonline.com/arcgis/rest/services/NatGeo_World_Map/MapServer/WMTS/", //自然地理世界地图16层
+        "https://services.arcgisonline.com/arcgis/rest/services/USA_Topo_Maps/MapServer/WMTS/", //美国地形图15
+        "https://services.arcgisonline.com/arcgis/rest/services/World_Imagery/MapServer/WMTS", // 世界影像图 23
+        "https://services.arcgisonline.com/arcgis/rest/services/Elevation/World_Hillshade_Dark/MapServer/WMTS/", //世界山阴暗 23
+        "https://services.arcgisonline.com/arcgis/rest/services/Elevation/World_Hillshade/MapServer/WMTS/",
+        "https://services.arcgisonline.com/arcgis/rest/services/Reference/World_Boundaries_and_Places_Alternate/MapServer/WMTS/", //标记矢量图
+        "https://services.arcgisonline.com/arcgis/rest/services/Reference/World_Boundaries_and_Places/MapServer/WMTS/", //矢量标注图
+        "https://services.arcgisonline.com/arcgis/rest/services/Reference/World_Transportation/MapServer/WMTS/", //交通
+        "https://services.arcgisonline.com/arcgis/rest/services/Reference/World_Reference_Overlay/MapServer/WMTS/", //13世界参考覆盖
+        "https://services.arcgisonline.com/arcgis/rest/services/Specialty/DeLorme_World_Base_Map/MapServer/WMTS/", //德洛姆世界底图基础底图。
+        "https://services.arcgisonline.com/arcgis/rest/services/Specialty/World_Navigation_Charts/MapServer/WMTS/", //世界导航图
+      ],
     };
   },
   methods: {
@@ -89,102 +116,37 @@ export default {
      * 初始化地图
      */
     initMap() {
-      //通过范围计算得到分辨率数组
-      // var projection = getProjection("EPSG:3857");
-      // 天地图使用EPSG: 4326坐标系
-      var projection = getProjection("EPSG:4326");
-      // 获取此投影的有效范围。
-      var projectionExtent = projection.getExtent();
-      // getWidth获取范围宽度。
-      var size = getWidth(projectionExtent) / 256;
-      var resolutions = new Array(14);
-      var matrixIds = new Array(14);
-      for (var z = 0; z < 14; ++z) {
-        //分辨率和matrixIds数组
-        resolutions[z] = size / Math.pow(2, z);
-        matrixIds[z] = z;
-      }
-      // 数据源信息
-      this.layers = [
-        // 加载天地图的WMTS协议的地图
-        new TileLayer({
-          source: new WMTS({
-            url: this.tiandituLink.img_c + this.tiandiTuTk,
-            layer: "img", //注意每个图层这里不同
-            //投影坐标系设置矩阵
-            matrixSet: "c",
-            format: "tiles",
-            style: "default",
-            projection: projection,
-            tileGrid: new WMTSTileGrid({
-              origin: getTopLeft(projectionExtent),
-              resolutions: resolutions,
-              matrixIds: matrixIds,
-            }),
-            wrapX: true,
-          }),
-        }),
-        // new TileLayer({
-        //   source: new WMTS({
-        //     url: this.tiandituLink.vec_c + this.tiandiTuTk,
-        //     layer: "vec", //注意每个图层这里不同
-        //     //投影坐标系设置矩阵
-        //     matrixSet: "c",
-        //     format: "tiles",
-        //     style: "default",
-        //     projection: projection,
-        //     tileGrid: new WMTSTileGrid({
-        //       origin: getTopLeft(projectionExtent),
-        //       resolutions: resolutions,
-        //       matrixIds: matrixIds,
-        //     }),
-        //     wrapX: true,
-        //   }),
-        // }), 
-        // 加载arcgis的WMTS协议的地图
-        // new TileLayer({
-        //   source: new WMTS({
-        //     // url: "https://services.arcgisonline.com/arcgis/rest/services/World_Terrain_Base/MapServer",
-        //     url: "https://services.arcgisonline.com/arcgis/rest/services/World_Street_Map/MapServer/WMTS/", //世界街道地图23
-        //     // url: "https://services.arcgisonline.com/arcgis/rest/services/World_Physical_Map/MapServer/WMTS/",//仅有8层
-        //     // url: "https://services.arcgisonline.com/arcgis/rest/services/World_Shaded_Relief/MapServer/WMTS/", //仅有12层
-        //     // url: "https://services.arcgisonline.com/arcgis/rest/services/NatGeo_World_Map/MapServer/WMTS/",//自然地理世界地图16层
-        //     // url: "https://services.arcgisonline.com/arcgis/rest/services/USA_Topo_Maps/MapServer/WMTS/", //美国地形图15
-        //     // url: "https://services.arcgisonline.com/arcgis/rest/services/World_Imagery/MapServer/WMTS",// 世界影像图 23
-        //     // url: "https://services.arcgisonline.com/arcgis/rest/services/Elevation/World_Hillshade_Dark/MapServer/WMTS/",//世界山阴暗 23
-        //     // url: "https://services.arcgisonline.com/arcgis/rest/services/Elevation/World_Hillshade/MapServer/WMTS/",
-        //     // url: "https://services.arcgisonline.com/arcgis/rest/services/Reference/World_Boundaries_and_Places_Alternate/MapServer/WMTS/",//标记矢量图
-        //     // url: "https://services.arcgisonline.com/arcgis/rest/services/Reference/World_Boundaries_and_Places/MapServer/WMTS/",//矢量标注图
-        //     // url: "https://services.arcgisonline.com/arcgis/rest/services/Reference/World_Transportation/MapServer/WMTS/", //交通
-        //     // url: "https://services.arcgisonline.com/arcgis/rest/services/Reference/World_Reference_Overlay/MapServer/WMTS/", //13世界参考覆盖
-        //     // url: "https://services.arcgisonline.com/arcgis/rest/services/Specialty/DeLorme_World_Base_Map/MapServer/WMTS/", //德洛姆世界底图基础底图。
-        //     // url: "https://services.arcgisonline.com/arcgis/rest/services/Specialty/World_Navigation_Charts/MapServer/WMTS/",//世界导航图
-        //     // 投影坐标系
-        //     tileGrid: new WMTSTileGrid({
-        //       // 获取范围的左上角坐标。
-        //       origin: getTopLeft(projectionExtent),
-        //       resolutions: resolutions,
-        //       matrixIds: matrixIds,
-        //     }),
-        //     wrapX: true,
-        //     crossOrigin: "anonymous",
-        //   }),
-        // })
-      ];
       // 使用ol.Map来创建地图
       this.map = new olMap({
         // 地图图层
-        layers: this.layers,
+        // layers: this.layers,
+        layers: [],
         // 设置显示地图的视图
         view: new View({
           center: transform([108.9421, 34.2244], "EPSG:4326", "EPSG:3857"),
-          zoom: 10,
+          // center: [0,0],
+          // projection: "EPSG:3857",
+          zoom: 5,
           maxZoom: 19,
-          minZoom: 0,
+          // minZoom: 0,
         }),
         target: "map",
       });
-      this.addPoint()
+      // 添加天地图
+      const tiDiLayer = addWmtsLayer(
+        this.map,
+        this.tiandituLink.vec_w,
+        this.tiandiTuTk + '&layer=vec'+ '&tilematrixset=w',
+        // "vec",
+        // "w",
+        "tiles"
+      );
+      // console.log(tiDiLayer)
+      // 添加arcgis地图api
+      // const arcGisMapLayer = addWmtsLayer(this.map, this.ArcGisLink[1])
+      // const OSMLayers = addOSMLayer(this.map);
+      // const changeLyers = changeTheme(this.map, arcGisMapLayer)
+      this.addPoint();
     },
     addPoint() {
       /**

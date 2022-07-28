@@ -105,7 +105,7 @@ export default {
       let OffilineMapLayer = new TileLayer({
         source: new XYZ({
           url: "http://172.16.29.100:9800/gis/bj/tiles/{z}/{x}/{y}.png",
-          projection: "EPSG:3857",
+          // projection: "EPSG:3857",
         }),
       });
       // 高德地图层
@@ -131,17 +131,18 @@ export default {
         // 设置显示地图的视图
         view: new View({
           // center: transform([108.9421, 34.2244], "EPSG:4326", "EPSG:3857"),//西安小寨
-          center: transform([116.411794, 39.9068], "EPSG:4326", "EPSG:3857"),//北京
+          center: transform([116.423816, 39.511305], "EPSG:4326", "EPSG:3857"), //北京
           // projection: "EPSG:3857",
-          zoom: 10,
+          zoom: 12,
           // maxZoom: 13,
           maxZoom: 14,
           minZoom: 0,
           // 鼠标每次滚动一个图层
-          constrainResolution: true,
+          // constrainResolution: true,
         }),
         target: "map",
       });
+      this.addPoint()
       this.map.on("moveend", function (e) {
         console.log("e", this.getView().getZoom());
       });
@@ -159,7 +160,38 @@ export default {
       });
       this.map.addLayer(layer);
     },
+    addPoint() {
+      /**
+       * 创建一个活动图标需要的feature，并设置位置。
+       */
+      const activityLayer = new VectorLayer({
+        source: new VectorSource(),
+      });
 
+      // 创建一个活动图标需要的Feature，并设置位置
+      var activity = new Feature({
+        geometry: new Point(
+          transform([116.423816, 39.511305], "EPSG:4326", "EPSG:3857")
+          // [108.9421, 34.2244]
+        ),
+      });
+      // 设置Feature的样式，
+      activity.setStyle(
+        new Style({
+          image: new Icon({
+            src: "../../public/image/blueIcon.png",
+            anchor: [0.5, 60],
+            anchorOrigin: "top-right",
+            anchorXUnits: "fraction",
+            anchorYUnits: "pixels",
+            offsetOrigin: "top-right",
+            // scale: 1,
+          }),
+        })
+      );
+      activityLayer.getSource().addFeature(activity);
+      this.map.addLayer(activityLayer);
+    },
   },
   mounted() {
     this.initMap(); //初始化地图

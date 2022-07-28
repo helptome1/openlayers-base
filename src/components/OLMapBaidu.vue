@@ -53,7 +53,7 @@ import {
   fromLonLat,
   transform,
   addProjection,
-  addCoordinateTransforms
+  addCoordinateTransforms,
 } from "ol/proj";
 import Projection from "ol/proj/Projection";
 
@@ -66,6 +66,17 @@ import proj4 from "proj4/dist/proj4";
 import projzh from "projzh";
 // 导入axios
 import axios from "axios";
+
+import {
+  addTdtWmtsLayer,
+  addWmtsLayer,
+  addOSMLayer,
+  addXYZLayer,
+  addWMSLayer,
+  gaodeTranslate,
+  baiduProj,
+  addBaiduLayer
+} from "./js/commonApi";
 
 export default {
   data() {
@@ -85,26 +96,37 @@ export default {
     /**
      * 百度坐标系转换
      */
-    baiduProj() {
-        let center = [108.94238,34.26097]; //西安钟楼
-        // let center = [108.964031,34.217865]; //西安大雁塔
-        // let center = [116.411794, 39.9068]; //北京东单
-        let extent = [72.004, 0.8293, 137.8347, 55.8271];
-        let baiduMercator = new Projection({
-            code: 'bd-09',
-            extent: applyTransform(extent, projzh.ll2bmerc),
-            units: 'm'
-        });
-        addProjection(baiduMercator);
-        addCoordinateTransforms('EPSG:4326', baiduMercator, projzh.ll2bmerc, projzh.bmerc2ll);
-        addCoordinateTransforms('EPSG:3857', baiduMercator, projzh.smerc2bmerc, projzh.bmerc2smerc);
-    },
+    // baiduProj() {
+    //   let center = [108.94238, 34.26097]; //西安钟楼
+    //   // let center = [108.964031,34.217865]; //西安大雁塔
+    //   // let center = [116.411794, 39.9068]; //北京东单
+    //   let extent = [72.004, 0.8293, 137.8347, 55.8271];
+    //   let baiduMercator = new Projection({
+    //     code: "bd-09",
+    //     extent: applyTransform(extent, projzh.ll2bmerc),
+    //     units: "m",
+    //   });
+    //   addProjection(baiduMercator);
+    //   addCoordinateTransforms(
+    //     "EPSG:4326",
+    //     baiduMercator,
+    //     projzh.ll2bmerc,
+    //     projzh.bmerc2ll
+    //   );
+    //   addCoordinateTransforms(
+    //     "EPSG:3857",
+    //     baiduMercator,
+    //     projzh.smerc2bmerc,
+    //     projzh.bmerc2smerc
+    //   );
+    // },
 
     /**
      * 初始化地图
      */
     initMap() {
-      this.baiduProj()
+      // this.baiduProj();
+      baiduProj();
       //通过范围计算得到分辨率数组
       // 定义一些常量
       // const projection = getProjection("EPSG:4326");
@@ -126,18 +148,17 @@ export default {
       // );
       // register(proj4);
 
-
-       // 自定义分辨率和瓦片坐标系
+      // 自定义分辨率和瓦片坐标系
       var resolutions2 = [];
-      var maxZoom = 19;
+      var maxZoom = 18;
 
       // 计算百度使用的分辨率
-      for(var i=0; i<=maxZoom; i++){
-          resolutions2[i] = Math.pow(2, 18-i); //计算每一层的分辨率，存进 resolutions 中
+      for (var i = 0; i <= maxZoom; i++) {
+        resolutions2[i] = Math.pow(2, 18 - i); //计算每一层的分辨率，存进 resolutions 中
       }
-      var tilegrid  = new TileGrid({
-          origin: [0,0],    // 设置原点坐标
-          resolutions: resolutions2    // 设置分辨率
+      var tilegrid = new TileGrid({
+        origin: [0, 0], // 设置原点坐标
+        resolutions: resolutions2, // 设置分辨率
       });
 
       // 百度矢量底图地图服务
@@ -170,12 +191,12 @@ export default {
             "&styles=pl&udt=20151021&scaler=1&p=1"
           );
         },
-        // url: 'http://online3.map.bdimg.com/onlinelabel/?qt=tile&x={x}&y={y}&z={z}&styles=pl&udt=20170712&scaler=1&p=1'
+        // url: 'http://online3.map.bdimg.com/onlinelabel/?qt=tile&x={x}&y={y}&z={z}&styles=pl&udt=20170712&scaler=1&p=1',
         crossOrigin: "anonymous",
       });
       // 百度影像注记地图服务
       let source1 = new TileImage({
-        projection: projection,
+        projection: "bd-09",
         tileGrid: tilegrid,
         tileUrlFunction: function (tileCoord, pixelRatio, proj) {
           if (!tileCoord) {
@@ -204,7 +225,7 @@ export default {
       });
       // 百度影像地图服务
       let source2 = new TileImage({
-        projection: projection,
+        projection: "bd-09",
         tileGrid: tilegrid,
         tileUrlFunction: function (tileCoord, pixelRatio, proj) {
           if (!tileCoord) {
@@ -235,27 +256,27 @@ export default {
       // 数据源信息
       this.layers = [
         // 百度地图
-        new TileLayer({
-          source: source0,
-        }),
-        // 加载WMTS协议的地图
         // new TileLayer({
-        //   source: new WMTS({
-        //     url: "http://t0.tianditu.gov.cn/vec_c/wmts?tk=20671382c71c11dac5d763aab0185146",
-        //     layer: "vec", //注意每个图层这里不同
-        //     //投影坐标系设置矩阵
-        //     matrixSet: "c",
-        //     format: "tiles",
-        //     style: "default",
-        //     projection: projection,
-        //     tileGrid: new WMTSTileGrid({
-        //       origin: getTopLeft(projectionExtent),
-        //       resolutions: resolutions,
-        //       matrixIds: matrixIds,
-        //     }),
-        //     wrapX: true,
-        //   }),
+        //   source: source0,
         // }),
+        // 加载WMTS协议的地图
+        new TileLayer({
+          source: new WMTS({
+            url: "http://t0.tianditu.gov.cn/vec_c/wmts?tk=20671382c71c11dac5d763aab0185146",
+            layer: "vec", //注意每个图层这里不同
+            //投影坐标系设置矩阵
+            matrixSet: "c",
+            format: "tiles",
+            style: "default",
+            projection: projection,
+            tileGrid: new WMTSTileGrid({
+              origin: getTopLeft(projectionExtent),
+              resolutions: resolutions,
+              matrixIds: matrixIds,
+            }),
+            wrapX: true,
+          }),
+        }),
       ];
       // 使用ol.Map来创建地图
       this.map = new olMap({
@@ -267,13 +288,13 @@ export default {
           center: [108.9421, 34.2244],
           zoom: 16,
           maxZoom: 19,
-          projection: "EPSG:4326"
+          projection: "EPSG:4326",
         }),
         target: "map",
       });
-
+      addBaiduLayer(this.map);
       // 添加点坐标
-      this.addPoint()
+      this.addPoint();
     },
     addPoint() {
       /**

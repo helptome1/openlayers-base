@@ -35,12 +35,12 @@ export default {
                 // 设置地图图层
                 layers: [
                     // 创建一个使用Open Street Map地图源的瓦片图层
-                    new TileLayer({source: new OSM()}),
-                    // new TileLayer({
-                    //     source: new XYZ({
-                    //         url:"http://map.geoq.cn/ArcGIS/rest/services/ChinaOnlineStreetPurplishBlue/MapServer/tile/{z}/{y}/{x}",
-                    //     }),
-                    // }),
+                    // new TileLayer({source: new OSM()}),
+                    new TileLayer({
+                        source: new XYZ({
+                            url:"http://map.geoq.cn/ArcGIS/rest/services/ChinaOnlineStreetPurplishBlue/MapServer/tile/{z}/{y}/{x}",
+                        }),
+                    }),
                 ],
                 // 
                 view: new View({
