@@ -75,7 +75,8 @@ import {
   addWMSLayer,
   gaodeTranslate,
   baiduProj,
-  addBaiduLayer
+  addBaiduLayer,
+  addLayerToMap
 } from "./js/commonApi";
 
 export default {
@@ -292,7 +293,8 @@ export default {
         }),
         target: "map",
       });
-      addBaiduLayer(this.map);
+      const baiduLayer = addBaiduLayer(this.map);
+      addLayerToMap(this.map, baiduLayer)
       // 添加点坐标
       this.addPoint();
     },

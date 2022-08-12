@@ -19,7 +19,7 @@ import {
   TileImage,
   WMTS,
   TileArcGISRest,
-  Raster as RasterSource
+  Raster as RasterSource 
 } from "ol/source";
 import { Map as olMap, View, Feature, Overlay } from "ol";
 import { Point, Circle } from "ol/geom";
@@ -104,36 +104,6 @@ function addTdtWmtsLayer(map, url, tk, layerName, matrixSet, format) {
   map.addLayer(layer);
   return layer;
 }
-/**
- * 加载wmts服务的api
- * @param {*} map 地图
- * @param {*} url wmts服务地址
- * @returns 
- */
-function addWmtsLayer(map, url, tk = '', layerName = '', matrixSet = '', format = '') {
-  let layer = new TileLayer({
-    source: new WMTS({
-      url: `${url}${tk != '' ? tk : ''}`,
-      layer: layerName,
-      matrixSet: matrixSet,
-      format: format,
-      projection: projection,
-      // 投影坐标系
-      tileGrid: new WMTSTileGrid({
-        // 获取范围的左上角坐标。
-        origin: getTopLeft(projectionExtent),
-        resolutions: resolutions,
-        matrixIds: matrixIds,
-      }),
-      style: 'default',
-      wrapX: true,
-      // 跨域请求
-      crossOrigin: "anonymous",
-    }),
-  })
-  map.addLayer(layer)
-  return layer;
-}
 
 /**
  * 自定义切片地图颜色的函数。
@@ -167,7 +137,7 @@ function changeTheme(map, Tilelayer) {
   //openlayer 像素转换类，可以直接当做source使用
   const raster = new RasterSource({
     sources: [
-      //传入图层，这里是天地图矢量图或者天地图矢量注记
+      //传入图层
       Tilelayer,
     ],
     //这里设置为image类型，与官方示例不同，优化速度
@@ -189,7 +159,7 @@ function changeTheme(map, Tilelayer) {
     name: "天地图矢量图层",
     source: raster
   });
-  map.addLayer(layer);
+  // map.addLayer(layer);
   return layer;
 }
 
@@ -202,7 +172,7 @@ function addOSMLayer(map) {
   let OSMLayer = new TileLayer({
     source: new OSM(),
   })
-  map.addLayer(OSMLayer)
+  // map.addLayer(OSMLayer)
   return OSMLayer;
 }
 /**
@@ -223,6 +193,7 @@ function addBaiduLayer(map) {
   });
   // 配置bd-09坐标投影。
   baiduProj();
+
   let source = new TileImage({
     projection: "bd-09",
     tileGrid: tilegrid,
@@ -254,7 +225,7 @@ function addBaiduLayer(map) {
   let layer = new TileLayer({
     source: source,
   })
-  map.addLayer(layer)
+  // map.addLayer(layer)
   return layer
 }
 
@@ -269,26 +240,73 @@ function addXYZLayer(map, url, projection = "EPSG:3857") {
   let layer = new TileLayer({
     source: source
   })
-  map.addLayer(layer);
+  // map.addLayer(layer);
   return layer;
 }
 
-// 增加WMS格式的地图服务图层
+/**
+ * 增加WMS格式的地图服务图层
+ * @param {*} map 地图
+ * @param {*} url 地图链接
+ * @param {*} layerName 图层名称
+ * @param {*} extent 加载范围
+ * @returns 图层
+ */
 function addWMSLayer(map, url, layerName, extent = null) {
   let source = new TileWMS({
     url: url,
-    params: {
-      'LAYERS': layerName,
-      'TILED': true
-    },
+    // params: {
+    //   'LAYERS': layerName,
+    //   'TILED': true
+    // },
     crossOrigin: 'anonymous'
   })
   let layer = new TileLayer({
     extent: extent,
     source: source
   })
-  map.addLayer(layer);
+  // map.addLayer(layer);
   return layer;
+}
+
+/**
+ * 加载wmts服务的api
+ * @param {*} map 地图
+ * @param {*} url wmts服务地址
+ * @returns 
+ */
+function addWmtsLayer(map, url, tk = '', layerName = '', matrixSet = '', format = '') {
+  let layer = new TileLayer({
+    source: new WMTS({
+      url: `${url}${tk != '' ? tk : ''}`,
+      layer: layerName,
+      matrixSet: matrixSet,
+      format: format,
+      projection: projection,
+      // 投影坐标系
+      tileGrid: new WMTSTileGrid({
+        // 获取范围的左上角坐标。
+        origin: getTopLeft(projectionExtent),
+        resolutions: resolutions,
+        matrixIds: matrixIds,
+      }),
+      style: 'default',
+      wrapX: true,
+      // 跨域请求
+      crossOrigin: "anonymous",
+    }),
+  })
+  // map.addLayer(layer)
+  return layer;
+}
+
+/**
+ * 把地图添加到地图中去
+ * @param {MAP} map 地图
+ * @param {*} layer 图层
+ */
+function addLayerToMap(map, layer) {
+  map.addLayer(layer)
 }
 
 /**
@@ -327,7 +345,7 @@ function gaodeTranslate() {
  * 百度坐标系转换
  */
 function baiduProj() {
-  let center = [108.94238, 34.26097]; //西安钟楼
+  // let center = [108.94238, 34.26097]; //西安钟楼
   // let center = [108.964031,34.217865]; //西安大雁塔
   // let center = [116.411794, 39.9068]; //北京东单
   let extent = [72.004, 0.8293, 137.8347, 55.8271];
@@ -348,6 +366,7 @@ export {
   addOSMLayer,
   addXYZLayer,
   addWMSLayer,
+  addLayerToMap,
   gaodeTranslate,
   baiduProj,
   addBaiduLayer,

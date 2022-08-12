@@ -66,6 +66,16 @@ import WMTSTileGrid from "ol/tilegrid/WMTS";
 // 导入axios
 import axios from "axios";
 
+// 封装的函数
+import {
+  addTdtWmtsLayer,
+  addWmtsLayer,
+  addOSMLayer,
+  addXYZLayer,
+  addWMSLayer,
+  changeTheme,
+} from "./js/commonApi";
+
 export default {
   data() {
     return {
@@ -131,9 +141,10 @@ export default {
         // 设置显示地图的视图
         view: new View({
           // center: transform([108.9421, 34.2244], "EPSG:4326", "EPSG:3857"),//西安小寨
-          center: transform([116.423816, 39.511305], "EPSG:4326", "EPSG:3857"), //北京
+          // center: transform([116.423816, 39.511305], "EPSG:4326", "EPSG:3857"), //北京
+          center: transform([116.404269, 39.913607], "EPSG:4326", "EPSG:3857"),
           // projection: "EPSG:3857",
-          zoom: 12,
+          zoom: 8,
           // maxZoom: 13,
           maxZoom: 14,
           minZoom: 0,
@@ -142,7 +153,10 @@ export default {
         }),
         target: "map",
       });
-      this.addPoint()
+
+      // addWmtsLayer(this.map, 'http://172.16.29.100:9800/gis/bj/tiles');
+
+      // this.addPoint()
       this.map.on("moveend", function (e) {
         console.log("e", this.getView().getZoom());
       });

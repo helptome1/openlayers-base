@@ -62,7 +62,8 @@ import {
   addOSMLayer,
   addXYZLayer,
   addWMSLayer,
-  changeTheme
+  changeTheme,
+  addLayerToMap
 } from "./js/commonApi";
 
 export default {
@@ -141,6 +142,7 @@ export default {
         // "w",
         "tiles"
       );
+      addLayerToMap(this.map, tiDiLayer)
       // console.log(tiDiLayer)
       // 添加arcgis地图api
       // const arcGisMapLayer = addWmtsLayer(this.map, this.ArcGisLink[1])

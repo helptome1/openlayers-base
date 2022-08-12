@@ -149,26 +149,32 @@ export default {
     addGeoJSON(src) {
       // 创建geojson数据来源
       var geoSourece = new VectorSource({
-        // url: '../../public/json/data.json'
-        features: new GeoJSON().readFeatures(src, {
-          //readFeature可以重新设置坐标系
-          dataProjection: "EPSG:4326", // 设定JSON数据使用的坐标系
-          featureProjection: "EPSG:3857", // 设定当前地图使用的feature的坐标系
-        }),
+        // 写法1
+        // features: new GeoJSON().readFeatures(src, {
+        //   //readFeature可以重新设置坐标系
+        //   dataProjection: "EPSG:4326", // 设定JSON数据使用的坐标系
+        //   featureProjection: "EPSG:3857", // 设定当前地图使用的feature的坐标系
+        // }),
+        // 写法2
+        url: "../../public/json/sxhn.geojson",
+        projection: "EPSG:4326",
+        format: new GeoJSON(),
       });
       // 创建一个矢量地图图层
       var geoLayer = new VectorLayer({
         source: geoSourece,
         // 设置样式，边框和填充
-        // style: new Style({
-        //   stroke: new Stroke({
-        //     color: "green",
-        //     width: 5,
-        //   }),
-        //   fill: new Fill({
-        //     color: "rgba(255, 255, 0, 0.5)",
-        //   }),
-        // }),
+        style: function (feature, demo) {
+          return new Style({
+            stroke: new Stroke({
+              color: "green",
+              width: 2,
+            }),
+            fill: new Fill({
+              color: feature.get('COLOR'),
+            }),
+          });
+        },
       });
       this.map.addLayer(geoLayer);
     },
@@ -184,17 +190,13 @@ export default {
     },
     // 使用axios获取数据
     getGeoJson() {
-      axios.get("../../public/json/data.geojson").then((res) => {
-        // this.addGeoJSON(res.data);
-      });
+      axios.get("../../public/json/data.geojson").then((res) => {});
       axios.get("../../public/json/sxhn.geojson").then((res) => {
         this.addGeoJSON(res.data);
       });
       axios
         .get("https://geo.datav.aliyun.com/areas_v3/bound/100000_full.json")
-        .then((res) => {
-          // this.addGeoJSON(res.data);
-        });
+        .then((res) => {});
     },
     /**
      * 监听事件

@@ -46,6 +46,8 @@ import {
   addOSMLayer,
   addXYZLayer,
   addWMSLayer,
+  changeTheme,
+  addLayerToMap
 } from "./js/commonApi";
 
 /**
@@ -96,7 +98,9 @@ export default {
         }),
         target: "map",
       });
-      const wmsLayer = addWMSLayer(this.map, 'https://ahocevar.com/geoserver/wms', 'topp:states');
+      const wmsLayer = addWMSLayer(this.map, 'https://ahocevar.com/geoserver/wms?LAYERS=topp:states', 'topp:states');
+      // changeTheme(this.map, wmsLayer)
+      addLayerToMap(this.map, wmsLayer)
     },
   },
   mounted() {

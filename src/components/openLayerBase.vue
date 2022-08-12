@@ -39,7 +39,8 @@ import {
   addXYZLayer,
   addWMSLayer,
   gaodeTranslate,
-  changeTheme
+  changeTheme,
+  addLayerToMap
 } from "./js/commonApi";
 
 // import ol from "ol";
@@ -111,6 +112,7 @@ export default {
           // center: position,
           zoom: 14,
           // 指定投影使用EPSG:4326
+          // projection: "EPSG:3857",
           // projection: "EPSG:4326",
         }),
         target: "map",
@@ -121,8 +123,11 @@ export default {
         "http://wprd0{1-4}.is.autonavi.com/appmaptile?x={x}&y={y}&z={z}&lang=zh_cn&size=1&scl=1&style=7",
         "GCJ-02"
       );
+      addLayerToMap(this.map, gaodeMapLayer)
+      this.addPoint()
       // changeTheme(this.map, gaodeMapLayer)
-
+    },
+    addPoint() {
       /**
        * 创建一个活动图标需要的feature，并设置位置。
        */
@@ -133,7 +138,8 @@ export default {
       // 创建一个活动图标需要的Feature，并设置位置
       var activity = new Feature({
         geometry: new Point(
-          transform([108.9421, 34.2244], "EPSG:4326", "EPSG:3857")
+          // transform([108.9421, 34.2244], "EPSG:4326", "EPSG:3857")
+          transform([108.9421, 34.2244], "EPSG:4326", "GCJ-02")
         ),
       });
       // 设置Feature的样式，

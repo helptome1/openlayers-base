@@ -55,6 +55,17 @@ import WMTSTileGrid from "ol/tilegrid/WMTS";
 // 导入axios
 import axios from "axios";
 
+// 导入公共模块
+import {
+  addTdtWmtsLayer,
+  addWmtsLayer,
+  addOSMLayer,
+  addXYZLayer,
+  addWMSLayer,
+  changeTheme,
+  addLayerToMap
+} from "./js/commonApi";
+
 export default {
   data() {
     return {
@@ -87,19 +98,27 @@ export default {
       // 使用ol.Map来创建地图
       this.map = new olMap({
         // 地图图层
-        layers: this.layers,
+        // layers: this.layers,
+        layers: [],
         // 设置显示地图的视图
         view: new View({
-          // center: transform([108.9421, 34.2244], "EPSG:4326", "EPSG:3857"),
-          center: [108.9421, 34.2244],
-          zoom: 19,
-          projection: 'EPSG:4326',
+          center: transform([108.9421, 34.2244], "EPSG:4326", "EPSG:3857"),
+          // center: [108.9421, 34.2244],
+          zoom: 2,
+          // projection: 'EPSG:4326',
+          // projection: 'EPSG:3857',
           // maxZoom: 13,
           maxZoom: 19,
           minZoom: 0,
         }),
         target: "map",
       });
+  
+      const omsLayer =  addOSMLayer(this.map);
+      // const resultLayer = changeTheme(this.map, omsLayer)
+
+      addLayerToMap(this.map, omsLayer)
+      
       this.addPoint()
     },
     // 异步加载矢量地图数据
@@ -133,8 +152,8 @@ export default {
       // 创建一个活动图标需要的Feature，并设置位置
       var activity = new Feature({
         geometry: new Point(
-          // transform([108.9421, 34.2244], "EPSG:4326", "EPSG:3857")
-          [108.9421, 34.2244]
+          transform([108.9421, 34.2244], "EPSG:4326", "EPSG:3857")
+          // [108.9421, 34.2244]
         ),
       });
       // 设置Feature的样式，
