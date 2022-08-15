@@ -243,7 +243,7 @@
       ],
       "properties": {
         "CITY": "陕西省",
-        "COLOR": "rgba(255, 255, 0, 0)"
+        "COLOR": "rgba(255, 255, 0, 0.5)"
       }
     },
     {
@@ -512,7 +512,7 @@
       ],
       "properties": {
         "CITY": "河南省",
-        "COLOR": "rgba(20, 255, 0, 0)"
+        "COLOR": "rgba(20, 255, 0, 0.5)"
       }
     }
   ],

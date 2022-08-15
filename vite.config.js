@@ -5,6 +5,7 @@ import { resolve } from "path";
 
 // https://vitejs.dev/config/
 export default defineConfig({
+  // base: './',
   plugins: [vue(), cesium()],
   resolve: {
     alias: {
@@ -19,5 +20,5 @@ export default defineConfig({
           },
       },
   },
-  runtimeCompiler: true
+  runtimeCompiler: true,
 });

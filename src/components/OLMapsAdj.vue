@@ -447,7 +447,9 @@ export default {
       activity.setStyle(
         new Style({
           image: new Icon({
-            src: "../../public/image/blueIcon.png",
+            // src: "../../public/image/blueIcon.png",
+            // src: "../../image/blueIcon.png",
+            src: "/image/blueIcon.png",
             anchor: [0.5, 60],
             anchorOrigin: "top-right",
             anchorXUnits: "fraction",
@@ -491,14 +493,15 @@ export default {
       this.map.addLayer(this.geoLayer);
     },
     getGeoJson() {
-      axios.get("../../public/json/data.geojson").then((res) => {});
-      axios.get("../../public/json/sxhn.geojson").then((res) => {
+      // axios.get("../../public/json/data.geojson").then((res) => {});
+      // axios.get("../../json/sxhn.geojson").then((res) => {
+      //   console.log(res.data);
+      //   this.addGeoJSON(res.data);
+      // });
+      axios.get("/json/sxhn.geojson").then((res) => {
         console.log(res.data);
         this.addGeoJSON(res.data);
       });
-      axios
-        .get("https://geo.datav.aliyun.com/areas_v3/bound/100000_full.json")
-        .then((res) => {});
     },
 
     updateFeature() {

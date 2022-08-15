@@ -43,11 +43,15 @@ import {
   Circle as CircleStyle,
 } from "ol/style";
 
+import * as olEvents from "ol/events";
+
 import TileGrid from "ol/tilegrid/TileGrid";
 //
 import * as olCoordinate from "ol/coordinate";
 // 选中图层交互
 import { Select as InteractionSelect } from "ol/interaction";
+
+import { pointerMove } from "ol/events/condition";
 
 // 导入axios
 import axios from "axios";
@@ -105,13 +109,13 @@ export default {
         // geoJson图层
       ];
       // 创建一个overlay提示
-      this.overlay = new Overlay({
-        element: document.getElementById("popup"),
-        autoPan: true,
-        autoPanAnimation: {
-          duration: 250,
-        },
-      });
+      // this.overlay = new Overlay({
+      //   element: document.getElementById("popup"),
+      //   autoPan: true,
+      //   autoPanAnimation: {
+      //     duration: 250,
+      //   },
+      // });
       // 使用ol.Map来创建地图
       this.map = new olMap({
         // 地图图层
@@ -121,21 +125,51 @@ export default {
           center: fromLonLat([108.94681668, 34.26982767]),
           zoom: 5,
         }),
-        overlays: [this.overlay],
+        // overlays: [this.overlay],
         target: "map",
       });
       this.listenEvent(this.map, this.overlay);
+      // 弹窗取消
+      // this.closerClick(this.overlay);
+      this.addGeoJSON("");
+      this.addPoint();
 
       // 注册点击交互事件。
       // Select的默认事件是singleClick
-      var selectSingleClick = new InteractionSelect({});
-      this.map.addInteraction(selectSingleClick);
-      selectSingleClick.on("select", function (event) {
-        // console.log("event", event);
-      });
-
-      // 弹窗取消
-      this.closerClick(this.overlay);
+      const _this = this;
+      this.map.addInteraction(
+        new InteractionSelect({
+          condition: pointerMove, // 唯一的不同之处，设置鼠标移到feature上就选取
+          style: new Style({
+            image: new CircleStyle({
+              radius: 10,
+              fill: new Fill({
+                color: "blue",
+              }),
+            }),
+          }),
+        })
+      );
+      // var selectSingleClick = new InteractionSelect({});
+      // this.map.addInteraction(selectSingleClick);
+      // selectSingleClick.on("select", function (event) {
+      //   console.log("event", event);
+      //   const features = _this.pointLayer.getSource().getFeatures();
+      //   features.forEach((item) => {
+      //     // console.log("item",item)
+      //     item.setStyle(
+      //       new Style({
+      //         image: new CircleStyle({
+      //           radius: 10,
+      //           fill: new Fill({
+      //             color: "blue",
+      //           }),
+      //         }),
+      //       })
+      //     );
+      //   });
+      //   // console.log("demo")
+      // });
     },
     // 注册弹窗取消事件
     closerClick(overlay) {
@@ -156,7 +190,7 @@ export default {
         //   featureProjection: "EPSG:3857", // 设定当前地图使用的feature的坐标系
         // }),
         // 写法2
-        url: "../../public/json/sxhn.geojson",
+        url: "/json/sxhn.geojson",
         projection: "EPSG:4326",
         format: new GeoJSON(),
       });
@@ -171,7 +205,7 @@ export default {
               width: 2,
             }),
             fill: new Fill({
-              color: feature.get('COLOR'),
+              color: feature.get("COLOR"),
             }),
           });
         },
@@ -190,19 +224,20 @@ export default {
     },
     // 使用axios获取数据
     getGeoJson() {
-      axios.get("../../public/json/data.geojson").then((res) => {});
-      axios.get("../../public/json/sxhn.geojson").then((res) => {
+      // axios.get("../../public/json/data.geojson").then((res) => {});
+      axios.get("/json/sxhn.geojson").then((res) => {
         this.addGeoJSON(res.data);
       });
-      axios
-        .get("https://geo.datav.aliyun.com/areas_v3/bound/100000_full.json")
-        .then((res) => {});
+      // axios
+      //   .get("https://geo.datav.aliyun.com/areas_v3/bound/100000_full.json")
+      //   .then((res) => {});
     },
     /**
      * 监听事件
      */
     listenEvent(map, overlay) {
       this.map.on("singleclick", function (evt) {
+        console.log("evt", evt);
         var feature = map.forEachFeatureAtPixel(
           evt.pixel,
           function (feature, layer) {
@@ -213,19 +248,66 @@ export default {
         // console.log("feature", feature.get("CITY"));
         // 获取当前点击坐标，并设置到HTML元素上去
         if (feature) {
-          var coordinate = evt.coordinate;
-          var hdms = olCoordinate.toStringHDMS(
-            transform(coordinate, "EPSG:3857", "EPSG:4326")
-          );
-          const content = document.getElementById("popup-content");
-          // 设置overlay的位置，从而显示在鼠标点击处
-          content.innerHTML = `
-          <h3>您点击的城市是：${feature.get("CITY")}</h3>
-          <p>You clicked here:</p><code>${hdms}</code>
-          `;
-          overlay.setPosition(coordinate);
+          // var coordinate = evt.coordinate;
+          // var hdms = olCoordinate.toStringHDMS(
+          //   transform(coordinate, "EPSG:3857", "EPSG:4326")
+          // );
+          // const content = document.getElementById("popup-content");
+          // // 设置overlay的位置，从而显示在鼠标点击处
+          // content.innerHTML = `
+          // <h3>您点击的城市是：${feature.get("CITY")}</h3>
+          // <p>You clicked here:</p><code>${hdms}</code>
+          // `;
+          // overlay.setPosition(coordinate);
         }
       });
+    },
+    // 打点
+    addPoint() {
+      /**
+       * 创建一个活动图标需要的feature，并设置位置。
+       */
+      this.pointLayer = new VectorLayer({
+        source: new VectorSource(),
+        projection: "EPSG:3857",
+        className: "point",
+        zIndex: 4,
+      });
+
+      // 创建一个活动图标需要的Feature，并设置位置
+      var activity = new Feature({
+        geometry: new Point(
+          // transform([108.9421, 34.2244], "EPSG:4326", this.projectionName)
+          transform([104.065735, 30.659462], "EPSG:4326", "EPSG:3857")
+          // fromLonLat([108.9421, 34.2244])
+        ),
+        name: "My Polygon",
+        CITY: "成都",
+      });
+      // 设置Feature的样式，
+      activity.setStyle(
+        new Style({
+          image: new CircleStyle({
+            // src: "/image/blueIcon.png",
+            anchor: [0.5, 60],
+            anchorOrigin: "top-right",
+            anchorXUnits: "fraction",
+            anchorYUnits: "pixels",
+            offsetOrigin: "top-right",
+            // scale: 1,
+            radius: 10,
+            fill: new Fill({
+              color: "rgba(8, 18, 28, 0.7)",
+            }),
+            // stroke: new Stroke({
+            //   color: "red",
+            //   size: 50,
+            // }),
+          }),
+        })
+      );
+      this.pointLayer.getSource().addFeature(activity);
+      this.map.addLayer(this.pointLayer);
     },
   },
   mounted() {

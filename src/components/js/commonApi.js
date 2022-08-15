@@ -19,7 +19,7 @@ import {
   TileImage,
   WMTS,
   TileArcGISRest,
-  Raster as RasterSource 
+  Raster as RasterSource
 } from "ol/source";
 import { Map as olMap, View, Feature, Overlay } from "ol";
 import { Point, Circle } from "ol/geom";
@@ -359,6 +359,10 @@ function baiduProj() {
   addCoordinateTransforms('EPSG:3857', baiduMercator, projzh.smerc2bmerc, projzh.bmerc2smerc);
 }
 
+/**
+ * 飞行定位动画
+ */
+
 
 export {
   addTdtWmtsLayer,
@@ -370,5 +374,6 @@ export {
   gaodeTranslate,
   baiduProj,
   addBaiduLayer,
-  changeTheme
+  changeTheme,
+  // flyTo
 }

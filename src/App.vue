@@ -20,6 +20,7 @@
       <router-link to="/Baidu">BaiduMap</router-link>----
       <router-link to="/LocalTile">LocalTile</router-link>----
       <router-link to="/MapAdj">MapAdj</router-link>----
+      <router-link to="/show">OLSHOW</router-link>----
       <!-- <router-link to="/Tencent">腾讯地图</router-link>---- -->
     </ul>
     <!-- 路由匹配到的组件将渲染在这里 -->
