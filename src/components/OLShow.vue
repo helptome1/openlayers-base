@@ -117,6 +117,10 @@ export default {
       AmapLayer: null,
       pointLayer: null,
       circleLayer: null,
+      // 污染地区图层
+      polluteLayer: null,
+      // 农用地区图层
+      farmlandLayer: null,
       geoLayer: null,
       mapView: null,
       OMSLayer: null,
@@ -142,13 +146,18 @@ export default {
       ],
       layerList: [
         {
-          name: "区域轮廓",
+          name: "四川省区域",
           value: "geoLayer",
           visible: true,
         },
         {
-          name: "重点单位",
-          value: "pointLayer",
+          name: "污染地区",
+          value: "polluteLayer",
+          visible: true,
+        },
+        {
+          name: "农用地区",
+          value: "farmlandLayer",
           visible: true,
         },
       ],
@@ -184,7 +193,7 @@ export default {
       const AmapLayer = new TileLayer({
         source: new XYZ({
           projection: "GCJ-02",
-          url: "http://wprd0{1-4}.is.autonavi.com/appmaptile?x={x}&y={y}&z={z}&lang=zh_cn&size=1&scl=1&style=6",
+          url: "http://wprd0{1-4}.is.autonavi.com/appmaptile?x={x}&y={y}&z={z}&lang=zh_cn&size=1&scl=1&style=7",
           wrapX: false,
           // 投影坐标系
           tileGrid: new WMTSTileGrid({
@@ -251,7 +260,7 @@ export default {
         projection: "EPSG:3857",
         zoom: 13,
         maxZoom: 19,
-        // minZoom: 0,
+        minZoom: 5,
       });
       const layers = [
         // this.tiandiLayer,
@@ -267,8 +276,12 @@ export default {
         target: "map",
       });
 
-      //加载geojson图层
+      // 加载四川省的区域地图显示。
       this.getGeoJson();
+      // 加载污染地区
+      this.getpolluteLayer();
+      // 农用地域
+      this.getfarmlandLayer();
 
       this.addPoint();
       const LayersArr = this.map.getLayers();
@@ -313,6 +326,7 @@ export default {
       this.pointLayer.getSource().addFeature(activity);
       this.map.addLayer(this.pointLayer);
     },
+    // 添加四川省的区域
     addGeoJSON(src) {
       // 创建geojson数据来源
       var geoSourece = new VectorSource({
@@ -325,14 +339,14 @@ export default {
         }),
       });
       // 创建一个矢量地图图层
-      this.geoLayer = new VectorLayer({
+      return new VectorLayer({
         className: "geoJson",
         source: geoSourece,
         zIndex: 3,
         style: function (feature, demo) {
           return new Style({
             stroke: new Stroke({
-              color: "yellow",
+              color: "red",
               width: 2,
             }),
             // fill: new Fill({
@@ -341,13 +355,28 @@ export default {
           });
         },
       });
-
-      this.map.addLayer(this.geoLayer);
     },
+    // 获取四川省区域的内容。
     getGeoJson() {
       axios.get("/show/sichuan.geojson").then((res) => {
-        this.addGeoJSON(res.data);
+        this.geoLayer =  this.addGeoJSON(res.data);
+        this.map.addLayer(this.geoLayer)
       });
+    },
+    // 获取污染区域的内容
+    getpolluteLayer() {
+      axios.get("/show/wurandikuai.geojson").then((res)=> {
+        this.polluteLayer =  this.addGeoJSON(res.data)
+        this.map.addLayer(this.polluteLayer)
+      })
+    },
+
+    // 农用地区域内容
+    getfarmlandLayer() {
+      axios.get("/show/farmland.geojson").then((res)=> {
+        this.farmlandLayer = this.addGeoJSON(res.data);
+        this.map.addLayer(this.farmlandLayer)
+      })
     },
 
     updateFeature() {
@@ -362,7 +391,7 @@ export default {
     checkPoint(elem) {
       this.pointLayer.setVisible(elem.target.checked);
     },
-    // 隐藏显示circle图层
+    // 隐藏显示四川省区域
     checkVector(elem) {
       this.geoLayer.setVisible(elem.target.checked);
     },
@@ -388,7 +417,7 @@ export default {
 
     // 飞行动画
     flyTo(location, done) {
-      const duration = 4000;
+      const duration = 3000;
       const zoom = this.mapView.getZoom();
       let parts = 2;
       let called = false;
@@ -433,10 +462,12 @@ export default {
     },
 
     isVisible(item) {
-      if (item.value == "pointLayer") {
-        this.pointLayer.setVisible(!item.visible);
+      if (item.value == "polluteLayer") {
+        this.polluteLayer.setVisible(!item.visible);
       } else if (item.value === "geoLayer") {
         this.geoLayer.setVisible(!item.visible);
+      } else if (item.value === "farmlandLayer") {
+        this.farmlandLayer.setVisible(!item.visible)
       }
       item.visible = !item.visible;
     },
