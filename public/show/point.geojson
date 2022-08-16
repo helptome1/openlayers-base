@@ -1,0 +1,205 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "id": 19455,
+      "properties": {
+        "_draw_type": "point"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          103.98685535,
+          30.69354911
+        ]
+      },
+      "bbox": [
+        103.98685535,
+        30.69354911,
+        103.98685535,
+        30.69354911
+      ]
+    },
+    {
+      "type": "Feature",
+      "id": 19511,
+      "properties": {
+        "_draw_type": "point"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          103.98638182,
+          30.68278436
+        ]
+      },
+      "bbox": [
+        103.98638182,
+        30.68278436,
+        103.98638182,
+        30.68278436
+      ]
+    },
+    {
+      "type": "Feature",
+      "id": 19543,
+      "properties": {
+        "_draw_type": "point"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          104.00984906,
+          30.6742735
+        ]
+      },
+      "bbox": [
+        104.00984906,
+        30.6742735,
+        104.00984906,
+        30.6742735
+      ]
+    },
+    {
+      "type": "Feature",
+      "id": 19576,
+      "properties": {
+        "_draw_type": "point"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          104.1382115,
+          30.64654732
+        ]
+      },
+      "bbox": [
+        104.1382115,
+        30.64654732,
+        104.1382115,
+        30.64654732
+      ]
+    },
+    {
+      "type": "Feature",
+      "id": 19609,
+      "properties": {
+        "_draw_type": "point"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          104.14188729,
+          30.66697789
+        ]
+      },
+      "bbox": [
+        104.14188729,
+        30.66697789,
+        104.14188729,
+        30.66697789
+      ]
+    },
+    {
+      "type": "Feature",
+      "id": 19642,
+      "properties": {
+        "_draw_type": "point"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          104.01974488,
+          30.6660051
+        ]
+      },
+      "bbox": [
+        104.01974488,
+        30.6660051,
+        104.01974488,
+        30.6660051
+      ]
+    },
+    {
+      "type": "Feature",
+      "id": 19675,
+      "properties": {
+        "_draw_type": "point"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          104.01409027,
+          30.61102696
+        ]
+      },
+      "bbox": [
+        104.01409027,
+        30.61102696,
+        104.01409027,
+        30.61102696
+      ]
+    },
+    {
+      "type": "Feature",
+      "id": 19707,
+      "properties": {
+        "_draw_type": "point"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          104.12492256,
+          30.60786357
+        ]
+      },
+      "bbox": [
+        104.12492256,
+        30.60786357,
+        104.12492256,
+        30.60786357
+      ]
+    },
+    {
+      "type": "Feature",
+      "id": 19739,
+      "properties": {
+        "_draw_type": "point"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          104.02087587,
+          30.63681689
+        ]
+      },
+      "bbox": [
+        104.02087587,
+        30.63681689,
+        104.02087587,
+        30.63681689
+      ]
+    },
+    {
+      "type": "Feature",
+      "id": 19772,
+      "properties": {
+        "_draw_type": "point"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          104.12266088,
+          30.63243793
+        ]
+      },
+      "bbox": [
+        104.12266088,
+        30.63243793,
+        104.12266088,
+        30.63243793
+      ]
+    }
+  ]
+}

@@ -97,25 +97,18 @@ export default {
         //     imageExtent: extent
         //   })
         // })
-        // 高德地图层
-        // new TileLayer({
-        //   source: new XYZ({
-        //     url: "http://map.geoq.cn/ArcGIS/rest/services/ChinaOnlineStreetPurplishBlue/MapServer/tile/{z}/{y}/{x}",
-        //   }),
-        // })
-
         // OSM静态地图图层
         new TileLayer({ source: new OSM() }),
         // geoJson图层
       ];
       // 创建一个overlay提示
-      // this.overlay = new Overlay({
-      //   element: document.getElementById("popup"),
-      //   autoPan: true,
-      //   autoPanAnimation: {
-      //     duration: 250,
-      //   },
-      // });
+      this.overlay = new Overlay({
+        element: document.getElementById("popup"),
+        autoPan: true,
+        autoPanAnimation: {
+          duration: 250,
+        },
+      });
       // 使用ol.Map来创建地图
       this.map = new olMap({
         // 地图图层
@@ -125,51 +118,51 @@ export default {
           center: fromLonLat([108.94681668, 34.26982767]),
           zoom: 5,
         }),
-        // overlays: [this.overlay],
+        overlays: [this.overlay],
         target: "map",
       });
       this.listenEvent(this.map, this.overlay);
       // 弹窗取消
-      // this.closerClick(this.overlay);
+      this.closerClick(this.overlay);
       this.addGeoJSON("");
       this.addPoint();
 
       // 注册点击交互事件。
       // Select的默认事件是singleClick
       const _this = this;
-      this.map.addInteraction(
-        new InteractionSelect({
-          condition: pointerMove, // 唯一的不同之处，设置鼠标移到feature上就选取
-          style: new Style({
-            image: new CircleStyle({
-              radius: 10,
-              fill: new Fill({
-                color: "blue",
-              }),
-            }),
-          }),
-        })
-      );
-      // var selectSingleClick = new InteractionSelect({});
-      // this.map.addInteraction(selectSingleClick);
-      // selectSingleClick.on("select", function (event) {
-      //   console.log("event", event);
-      //   const features = _this.pointLayer.getSource().getFeatures();
-      //   features.forEach((item) => {
-      //     // console.log("item",item)
-      //     item.setStyle(
-      //       new Style({
-      //         image: new CircleStyle({
-      //           radius: 10,
-      //           fill: new Fill({
-      //             color: "blue",
-      //           }),
+      // this.map.addInteraction(
+      //   new InteractionSelect({
+      //     condition: pointerMove, // 唯一的不同之处，设置鼠标移到feature上就选取
+      //     style: new Style({
+      //       image: new CircleStyle({
+      //         radius: 10,
+      //         fill: new Fill({
+      //           color: "red",
       //         }),
-      //       })
-      //     );
-      //   });
-      //   // console.log("demo")
-      // });
+      //       }),
+      //     }),
+      //   })
+      // );
+      var selectSingleClick = new InteractionSelect({});
+      this.map.addInteraction(selectSingleClick);
+      selectSingleClick.on("select", function (event) {
+        console.log("event", event);
+        const features = _this.pointLayer.getSource().getFeatures();
+        features.forEach((item) => {
+          // console.log("item",item)
+          item.setStyle(
+            new Style({
+              image: new CircleStyle({
+                radius: 10,
+                fill: new Fill({
+                  color: "blue",
+                }),
+              }),
+            })
+          );
+        });
+        // console.log("demo")
+      });
     },
     // 注册弹窗取消事件
     closerClick(overlay) {
@@ -205,6 +198,7 @@ export default {
               width: 2,
             }),
             fill: new Fill({
+              color: "red",
               color: feature.get("COLOR"),
             }),
           });
@@ -236,29 +230,61 @@ export default {
      * 监听事件
      */
     listenEvent(map, overlay) {
-      this.map.on("singleclick", function (evt) {
-        console.log("evt", evt);
+      const _this = this;
+      map.on("pointermove", function (evt) {
         var feature = map.forEachFeatureAtPixel(
           evt.pixel,
           function (feature, layer) {
             return feature;
           }
         );
-        console.log("feature", feature);
+        const features = _this.pointLayer.getSource().getFeatures();
         // console.log("feature", feature.get("CITY"));
         // 获取当前点击坐标，并设置到HTML元素上去
         if (feature) {
-          // var coordinate = evt.coordinate;
-          // var hdms = olCoordinate.toStringHDMS(
-          //   transform(coordinate, "EPSG:3857", "EPSG:4326")
-          // );
-          // const content = document.getElementById("popup-content");
-          // // 设置overlay的位置，从而显示在鼠标点击处
-          // content.innerHTML = `
-          // <h3>您点击的城市是：${feature.get("CITY")}</h3>
-          // <p>You clicked here:</p><code>${hdms}</code>
-          // `;
-          // overlay.setPosition(coordinate);
+          var coordinate = evt.coordinate;
+          var hdms = olCoordinate.toStringHDMS(
+            transform(coordinate, "EPSG:3857", "EPSG:4326")
+          );
+          const content = document.getElementById("popup-content");
+          // 设置overlay的位置，从而显示在鼠标点击处
+          content.innerHTML = `
+          <h3>您点击的城市是：${feature.get("CITY")}</h3>
+          <p>You clicked here:</p><code>${hdms}</code>
+          `;
+          overlay.setPosition(coordinate);
+
+          // features.forEach((item) => {
+          //   // console.log("item",item)
+          //   item.setStyle(
+          //     new Style({
+          //       image: new CircleStyle({
+          //         radius: 50,
+          //         fill: new Fill({
+          //           color: "green",
+          //         }),
+          //       }),
+          //     })
+          //   );
+          // });
+        } else {
+          console.log("cancel");
+          // 取消弹窗
+          _this.overlay.setPosition(undefined);
+
+          features.forEach((item) => {
+            // console.log("item",item)
+            item.setStyle(
+              new Style({
+                image: new CircleStyle({
+                  radius: 50,
+                  fill: new Fill({
+                    color: "rgba(8, 18, 28, 0.7)",
+                  }),
+                }),
+              })
+            );
+          });
         }
       });
     },
@@ -372,4 +398,5 @@ td {
 .ol-popup-closer:after {
   content: "✖";
 }
+
 </style>
