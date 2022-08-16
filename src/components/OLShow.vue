@@ -654,7 +654,7 @@ export default {
       _this.flyTo(item.properties.center, function () {
         _this.mapView.fit(theFeature[0].getGeometry().getExtent(), {
           duration: 1000,
-          minResolution: 15,
+          // minResolution: 17,
         });
       });
     },
