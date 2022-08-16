@@ -135,7 +135,10 @@ export default {
       overlay: null,
       projectionName: "GCJ-02",
       polluteList: [],
+      // 当前活跃的污染区域
       polluteAreaActiveFeature: null,
+      // 当前活跃的监管单位
+      pointActiveFeatures: null,
       colorList: [
         "#32e0a9",
         "#27eaff",
@@ -338,7 +341,7 @@ export default {
       this.map.addLayer(this.pointLayer);
     },
     // 添加四川省的区域
-    addGeoJSON(src, strokeColor = "", fillColor = "", layerName = "geojson", zIndex) {
+    addGeoJSON(src, strokeColor = "", fillColor = "", layerName = "geojson") {
       // 创建geojson数据来源
       var geoSourece = new VectorSource({
         features: new GeoJSON().readFeatures(src, {
@@ -348,27 +351,36 @@ export default {
         }),
       });
       // 创建一个矢量地图图层
-      return new VectorLayer({
+      const layer = new VectorLayer({
         className: layerName,
         source: geoSourece,
-        zIndex: zIndex,
         style: function (feature, demo) {
-          return new Style({
-            stroke: new Stroke({
-              color: strokeColor,
-              width: 2,
-            }),
-            fill: new Fill({
-              color: fillColor,
-            }),
-          });
+          if (layerName === "province") {
+            return new Style({
+              stroke: new Stroke({
+                color: strokeColor,
+                width: 2,
+              }),
+            });
+          } else {
+            return new Style({
+              stroke: new Stroke({
+                color: strokeColor,
+                width: 2,
+              }),
+              fill: new Fill({
+                color: fillColor,
+              }),
+            });
+          }
         },
       });
+      return layer;
     },
     // 获取四川省区域的内容。
     getGeoJson() {
       axios.get("/show/sichuan.geojson").then((res) => {
-        this.geoLayer = this.addGeoJSON(res.data, "pink", "rgba(8, 18, 28, 0)", 'province', 2);
+        this.geoLayer = this.addGeoJSON(res.data, "pink", "", "province");
         this.map.addLayer(this.geoLayer);
       });
     },
@@ -381,8 +393,7 @@ export default {
           res.data,
           "rgba(255, 109, 109,1)",
           "rgba(255, 109, 109,0.3)",
-          "pollute",
-          3
+          "pollute"
         );
         this.map.addLayer(this.polluteLayer);
         // 开启监听事件
@@ -390,18 +401,44 @@ export default {
           this.polluteLayer.getSource().getFeatures(),
           "mousemove",
           function (evt, feature) {
+            // 获取关联id
+            const currentId = feature.get("code");
             _this.polluteAreaActiveFeature = feature;
             feature.setStyle(
               new Style({
                 fill: new Fill({
-                  color: "rgba(255, 109, 109,1)",
+                  color: "rgba(255, 109, 109, 0.3)",
                 }),
                 stroke: new Stroke({
-                  color: "rgba(255, 109, 109,1)",
-                  width: 2,
+                  color: "rgba(255, 109, 109, 1)",
+                  width: 5,
                 }),
               })
             );
+            // 关联监管单位高亮。
+            const pointFeatures = _this.pointLayer.getSource().getFeatures();
+            for (let i = 0; i < pointFeatures.length; i++) {
+              const cId = Array.prototype.slice.call(
+                pointFeatures[i].get("cId")
+              );
+              if (cId.includes(currentId)) {
+                _this.pointActiveFeatures = pointFeatures[i];
+                pointFeatures[i].setStyle(
+                  new Style({
+                    image: new Icon({
+                      src: "/image/blueIcon.png",
+                      anchor: [0.5, 60],
+                      anchorOrigin: "top-right",
+                      anchorXUnits: "fraction",
+                      anchorYUnits: "pixels",
+                      offsetOrigin: "top-right",
+                      scale: 2,
+                    }),
+                  })
+                );
+                break;
+              }
+            }
           }
         );
       });
@@ -425,7 +462,6 @@ export default {
 
         this.pointLayer = new VectorLayer({
           className: "point",
-          zIndex: 4,
         });
         var pointSourceVector = new VectorSource();
         this.pointLayer.setSource(pointSourceVector);
@@ -646,16 +682,15 @@ export default {
           evt.pixel,
           function (feature, layer) {
             // if (layer.className_ == "pollute") {
-              // 自定义事件
-              feature.dispatchEvent({ type: "mousemove", event: event });
-              return feature;
+            // 自定义事件
+            feature.dispatchEvent({ type: "mousemove", event: event });
+            return feature;
             // }
           }
         );
         if (someFeature) {
           // console.log("feature", feature);
         } else {
-          console.log(_this.polluteAreaActiveFeature)
           if (_this.polluteAreaActiveFeature) {
             _this.polluteAreaActiveFeature.setStyle(
               new Style({
@@ -669,6 +704,21 @@ export default {
               })
             );
             _this.polluteAreaActiveFeature = null;
+          }
+          if (_this.pointActiveFeatures) {
+            _this.pointActiveFeatures.setStyle(
+              new Style({
+                image: new Icon({
+                  src: "/image/blueIcon.png",
+                  anchor: [0.5, 60],
+                  anchorOrigin: "top-right",
+                  anchorXUnits: "fraction",
+                  anchorYUnits: "pixels",
+                  offsetOrigin: "top-right",
+                  scale: 1,
+                }),
+              })
+            );
           }
         }
       });
