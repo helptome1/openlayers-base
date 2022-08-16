@@ -2,26 +2,27 @@
   <div id="map" ref="map">
     <!-- 菜单列表 -->
     <div class="menu-list">
-      <ul>
-        <li
-          v-for="(item, index) in polluteList"
-          :key="index"
-          @click="gotoCity(item)"
-        >
+      <!-- <ul>
+        <li v-for="(item, index) in polluteList" :key="index" @click="gotoCity(item)">
           {{ item.properties.name }}
         </li>
-      </ul>
+      </ul> -->
+      <el-scrollbar height="400px">
+        <p v-for="item in polluteList" :key="item" class="scrollbar-demo-item" @click="gotoCity(item)">{{ item.properties.name }}</p>
+      </el-scrollbar>
     </div>
+
     <!-- 显示与隐藏 -->
     <div class="show-list">
       <ul>
-        <li
-          v-for="(item, index) in layerList"
-          :key="index"
-          :class="{ active: item.visible }"
-          @click="isVisible(item)"
-        >
-          {{ item.name }}
+        <li v-for="(item, index) in layerList" :key="index" :class="{ active: item.visible }"  @click="isVisible(item)">
+          <!-- {{ item.name }} -->
+            <el-switch
+              v-model="item.visible"
+              size="small"
+              :inactive-text="item.name"
+              style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949"
+            />
         </li>
       </ul>
     </div>
@@ -110,7 +111,7 @@ import {
 } from "./js/commonApi";
 
 export default {
-  data() {
+  data () {
     return {
       map: null,
       tiandiLayer: null,
@@ -192,7 +193,7 @@ export default {
     };
   },
   methods: {
-    addAmapLayer() {
+    addAmapLayer () {
       const projection = getProjection("GCJ-02");
       const projectionExtent = projection.getExtent();
       const size = getWidth(projectionExtent) / 256;
@@ -221,7 +222,7 @@ export default {
       return AmapLayer;
     },
     // 天地图的坐标系统。
-    addTianduLayer() {
+    addTianduLayer () {
       const projection = getProjection("EPSG:3857");
       const projectionExtent = projection.getExtent();
       const size = getWidth(projectionExtent) / 256;
@@ -259,7 +260,7 @@ export default {
     /**
      * 初始化地图
      */
-    initMap() {
+    initMap () {
       // 高德坐标系注册
       gaodeTranslate();
       // 添加高德地图
@@ -304,7 +305,7 @@ export default {
       // 监听事件
       this.listenEvent(this.map, "pointermove");
     },
-    addPoint() {
+    addPoint () {
       /**
        * 创建一个活动图标需要的feature，并设置位置。
        */
@@ -341,7 +342,7 @@ export default {
       this.map.addLayer(this.pointLayer);
     },
     // 添加四川省的区域
-    addGeoJSON(src, strokeColor = "", fillColor = "", layerName = "geojson") {
+    addGeoJSON (src, strokeColor = "", fillColor = "", layerName = "geojson") {
       // 创建geojson数据来源
       var geoSourece = new VectorSource({
         features: new GeoJSON().readFeatures(src, {
@@ -378,14 +379,14 @@ export default {
       return layer;
     },
     // 获取四川省区域的内容。
-    getGeoJson() {
+    getGeoJson () {
       axios.get("/show/sichuan.geojson").then((res) => {
         this.geoLayer = this.addGeoJSON(res.data, "pink", "", "province");
         this.map.addLayer(this.geoLayer);
       });
     },
     // 获取污染区域的内容
-    getpolluteLayer() {
+    getpolluteLayer () {
       const _this = this;
       axios.get("/show/wurandiqu.geojson").then((res) => {
         this.polluteList = res.data.features;
@@ -444,7 +445,7 @@ export default {
       });
     },
 
-    registerEvents(features, event, fn) {
+    registerEvents (features, event, fn) {
       features.forEach((item) => {
         item.on(event, (evt) => {
           fn(evt, item);
@@ -453,7 +454,7 @@ export default {
     },
 
     // 监管单位
-    getSuperviseLayer() {
+    getSuperviseLayer () {
       axios.get("/show/guanliju.geojson").then((res) => {
         var reader = new GeoJSON({
           defaultDataProjection: "EPSG:4326",
@@ -488,7 +489,7 @@ export default {
     },
 
     // 农用地区域内容
-    getfarmlandLayer() {
+    getfarmlandLayer () {
       axios.get("/show/farmland.geojson").then((res) => {
         this.farmlandLayer = this.addGeoJSON(
           res.data,
@@ -522,7 +523,7 @@ export default {
       });
     },
 
-    updateFeature() {
+    updateFeature () {
       this.pointLayer.getSource().clear();
       this.geoLayer.getSource().clear();
 
@@ -531,15 +532,15 @@ export default {
       this.mapView.setZoom(5);
     },
 
-    checkPoint(elem) {
+    checkPoint (elem) {
       this.pointLayer.setVisible(elem.target.checked);
     },
     // 隐藏显示四川省区域
-    checkVector(elem) {
+    checkVector (elem) {
       this.geoLayer.setVisible(elem.target.checked);
     },
 
-    upAmap(elem) {
+    upAmap (elem) {
       if (elem.target.checked) {
         this.AmapLayer.setZIndex(2);
         this.projectionName = "GCJ-02";
@@ -550,7 +551,7 @@ export default {
     },
 
     // 置顶point图层到最上面
-    upPoint(elem) {
+    upPoint (elem) {
       if (elem.target.checked) {
         this.AmapLayer.setZIndex(3);
         this.baiduLayer.setZIndex(this.baiduLayer.getZIndex() - 1);
@@ -559,7 +560,7 @@ export default {
     },
 
     // 飞行动画
-    flyTo(location, done) {
+    flyTo (location, done) {
       const distance = getDistance(this.currentCoordinates, location);
       let duration = 3000;
       let startTime = 500;
@@ -570,7 +571,7 @@ export default {
       console.log("distance", distance);
       let parts = 2;
       let called = false;
-      function callback(complete) {
+      function callback (complete) {
         --parts;
         if (called) {
           return;
@@ -592,7 +593,7 @@ export default {
         scaleLevel = 3;
         duration = 2000;
         startTime = 100;
-      } else if (distance >= 100000 && distance < 300000) {
+      } else if (distance >= 100000 && distance < 400000) {
         scaleLevel = 5;
         duration = 3000;
         startTime = 500;
@@ -644,7 +645,7 @@ export default {
       this.currentCoordinates = location;
     },
 
-    gotoCity(item) {
+    gotoCity (item) {
       const _this = this;
       const arr = this.polluteLayer.getSource().getFeatures();
       const theFeature = arr.filter((feature) => {
@@ -654,28 +655,26 @@ export default {
       _this.flyTo(item.properties.center, function () {
         _this.mapView.fit(theFeature[0].getGeometry().getExtent(), {
           duration: 1000,
-          // minResolution: 17,
         });
       });
     },
 
-    isVisible(item) {
+    isVisible (item) {
       if (item.value == "polluteLayer") {
-        this.polluteLayer.setVisible(!item.visible);
+        this.polluteLayer.setVisible(item.visible);
       } else if (item.value === "geoLayer") {
-        this.geoLayer.setVisible(!item.visible);
+        this.geoLayer.setVisible(item.visible);
       } else if (item.value === "farmlandLayer") {
-        this.farmlandLayer.setVisible(!item.visible);
+        this.farmlandLayer.setVisible(item.visible);
       } else {
-        this.pointLayer.setVisible(!item.visible);
+        this.pointLayer.setVisible(item.visible);
       }
-      item.visible = !item.visible;
     },
 
     /**
      * 监听事件
      */
-    listenEvent(map, event) {
+    listenEvent (map, event) {
       const _this = this;
       map.on(event, (evt) => {
         const someFeature = map.forEachFeatureAtPixel(
@@ -724,7 +723,7 @@ export default {
       });
     },
   },
-  mounted() {
+  mounted () {
     this.initMap(); //初始化地图
   },
 };
@@ -734,19 +733,24 @@ export default {
   position: absolute;
   width: 100%;
   height: 100%;
+
   .menu-list {
     position: absolute;
     background-color: rgba(8, 18, 28, 0.7);
-    border-radius: 4px;
+    // border-radius: 4px;
     right: 20px;
     top: 25%;
-    width: 300px;
-    height: 450px;
+    // width: 300px;
+    // height: 450px;
     z-index: 999;
-    overflow-y: scroll;
+    padding: 10px 10px;
+    border-radius: 8px;
+    // overflow-y: scroll;
+    // border-radius: 8px;
     ul {
       // display: flex;
       height: 100%;
+
       // flex-direction: column;
       // justify-content: flex-start;
       // align-content: center;
@@ -759,6 +763,7 @@ export default {
         white-space: nowrap;
         text-overflow: ellipsis;
         overflow: hidden;
+
         &:hover {
           // background-color: #ccc;
           color: #fff;
@@ -766,25 +771,46 @@ export default {
       }
     }
   }
+  .scrollbar-demo-item {
+    display: flex;
+    align-items: center;
+    // justify-content: center;
+    height: 40px;
+    width: 300px;
+    margin: 10px;
+    text-align: left;
+    border-radius: 4px;
+    background: #18222c;
+    color: #409eff;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    cursor: pointer;
+  }
+
   .show-list {
     position: absolute;
     left: 10px;
     top: 30%;
-    width: 100px;
-    height: 120px;
-    padding: 10px 5px;
+    width: 130px;
+    height: 130px;
+    padding: 10px 15px;
     background-color: rgba(8, 18, 28, 0.7);
     z-index: 999;
+    border-radius: 8px;
     ul {
       display: flex;
       flex-direction: column;
       justify-content: flex-start;
+
       li {
         line-height: 1.8;
         height: 15%;
+        text-align: right;
         cursor: pointer;
         color: #bbb;
       }
+
       .active {
         color: #fff;
       }
@@ -805,6 +831,7 @@ export default {
   left: -50px;
   min-width: 280px;
 }
+
 .ol-popup:after,
 .ol-popup:before {
   top: 100%;
@@ -815,27 +842,32 @@ export default {
   position: absolute;
   pointer-events: none;
 }
+
 .ol-popup:after {
   border-top-color: white;
   border-width: 10px;
   left: 48px;
   margin-left: -10px;
 }
+
 .ol-popup:before {
   border-top-color: #cccccc;
   border-width: 11px;
   left: 48px;
   margin-left: -11px;
 }
+
 .ol-popup-closer {
   text-decoration: none;
   position: absolute;
   top: 2px;
   right: 8px;
 }
+
 .ol-popup-closer:after {
   content: "✖";
 }
+
 /*滚动条的宽度*/
 ::-webkit-scrollbar {
   width: 4px;
@@ -854,9 +886,7 @@ export default {
   border-radius: 0;
   background: rgba(0, 0, 0, 0.1);
 }
-.demo {
-  color: rgb(20, 164, 173);
-  background-color: #1d3e53;
-  // color: '#3366FF;
+.el-switch__label {
+  color: #fff;
 }
 </style>
