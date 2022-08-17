@@ -1,6 +1,6 @@
 <template>
   <div id="map" ref="map">
-    <h1 class="title">四川省土壤环境一张图</h1>
+    <div class="title">四川省土壤环境一张图</div>
     <!-- 菜单列表 -->
     <div class="menu-list">
       <el-tabs v-model="TabActiveName" class="demo-tabs">
@@ -399,7 +399,7 @@ export default {
       // 创建一个overlay提示
       this.overlay = new Overlay({
         element: document.getElementById("popup"),
-        autoPan: true,
+        autoPan: false,
         autoPanAnimation: {
           duration: 250,
         },
@@ -930,9 +930,12 @@ export default {
   height: 100%;
   .title {
     position: absolute;
+    background-color: rgba(8, 18, 28, 0.7) ;
     z-index: 9;
     top: 20px;
-    font-size: 40px;
+    font-size: 36px;
+    padding: 5px 10px;
+    border-radius: 5px;
     left: 50%;
     color: #409eff;
     transform: translateX(-50%);

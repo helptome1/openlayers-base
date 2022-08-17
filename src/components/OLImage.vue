@@ -348,7 +348,7 @@ export default {
   },
 };
 </script>
-<style lang="less">
+<style lang="less" scoped>
 #map {
   width: 100%;
   height: 800px;
