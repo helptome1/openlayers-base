@@ -53,6 +53,7 @@
           <el-switch
             v-model="item.visible"
             :active-text="item.name"
+            size="small"
             :style="{
               '--el-switch-on-color': item.color,
               '--el-switch-off-color': '#dcdfe6',
@@ -94,9 +95,9 @@
           <td>{{ overlayInfo.Status }}</td>
         </tr>
       </table>
-      <div v-else>
+      <!-- <div v-else>
         <img class="imgInfo" src="/image/farm.png" alt="" />
-      </div>
+      </div> -->
     </div>
   </div>
 </template>
@@ -238,19 +239,19 @@ export default {
       ],
       layerList: [
         {
-          name: "污染地区(20)",
+          name: "污染地区(6)",
           value: "polluteLayer",
           visible: true,
           color: "rgba(255, 109, 109,1)",
         },
         {
-          name: "农用地区(10)",
+          name: "农用地区(14)",
           value: "farmlandLayer",
           visible: true,
           color: "#32e0a9",
         },
         {
-          name: "监管单位(13)",
+          name: "重点监管单位(13)",
           value: "pointLayer",
           visible: true,
           color: "#20a2f4",
@@ -387,7 +388,7 @@ export default {
         center: transform([104.065735, 30.659462], "EPSG:4326", "GCJ-02"),
         // center: transform([108.9421, 34.2244], "EPSG:4326", "GCJ-02"),
         projection: "GCJ-02",
-        zoom: 17,
+        zoom: 8,
         maxZoom: 19,
         minZoom: 2,
         constrainResolution: true,
@@ -914,7 +915,7 @@ export default {
             );
           }
           // 取消弹窗
-          _this.overlay.setPosition(undefined);
+          // _this.overlay.setPosition(undefined);
           _this.overlayInfo = null;
         }
       });
@@ -937,7 +938,7 @@ export default {
     z-index: 9;
     top: 20px;
     font-size: 36px;
-    padding: 5px 10px;
+    padding: 5px 10px 5px 18px;
     border-radius: 5px;
     left: 50%;
     color: #ccc;
@@ -948,9 +949,9 @@ export default {
     position: absolute;
     background-color: rgba(8, 18, 28, 0.7);
     left: 20px;
-    top: 25%;
+    top: 28%;
     z-index: 999;
-    width: 250px;
+    width: 280px;
     padding: 10px 10px;
     border-radius: 8px;
     transition: all 0.5s;
@@ -995,7 +996,7 @@ export default {
     position: absolute;
     left: 20px;
     top: 11%;
-    width: 250px;
+    width: 280px;
     // height: 130px;
     padding: 10px 15px;
     background-color: rgba(8, 18, 28, 0.7);
@@ -1023,6 +1024,9 @@ export default {
 .el-switch--large .el-switch__label * {
   font-size: 18px;
 }
+.el-switch {
+  line-height: 1.5;
+}
 
 .ol-popup {
   position: absolute;
@@ -1030,7 +1034,7 @@ export default {
   opacity: 0.7;
   color: #fff;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
-  padding: 15px;
+  padding: 5px;
   border-radius: 10px;
   // border: 1px solid #cccccc;
   bottom: 12px;
