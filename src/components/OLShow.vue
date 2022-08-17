@@ -4,30 +4,32 @@
     <!-- 菜单列表 -->
     <div class="menu-list">
       <el-tabs v-model="TabActiveName" class="demo-tabs">
-        <el-tab-pane label="污染地区" name="first">
+        <el-tab-pane label="农用地区" name="first">
+          <el-scrollbar height="400px">
+            <span
+              v-for="(item, index) in farmAreaList"
+              :key="item"
+              class="scrollbar-demo-item"
+              :title="item.properties.name"
+              :class="{
+                'scrollbar-demo-item-active': index == activitySelectFarmIndex,
+              }"
+              @click="gotoCity(item, index)"
+            >
+              {{ item.properties.name }}
+            </span>
+          </el-scrollbar>
+        </el-tab-pane>
+        <el-tab-pane label="污染地区" name="second">
           <el-scrollbar height="400px">
             <p
               v-for="(item, index) in polluteList"
               :key="item"
               class="scrollbar-demo-item"
+              :title="item.properties.name"
               :class="{
                 'scrollbar-demo-item-active':
                   index == activitySelectPolluteIndex,
-              }"
-              @click="gotoCity(item, index)"
-            >
-              {{ item.properties.name }}
-            </p>
-          </el-scrollbar>
-        </el-tab-pane>
-        <el-tab-pane label="农用地区" name="second">
-          <el-scrollbar height="400px">
-            <p
-              v-for="(item, index) in farmAreaList"
-              :key="item"
-              class="scrollbar-demo-item"
-              :class="{
-                'scrollbar-demo-item-active': index == activitySelectFarmIndex,
               }"
               @click="gotoCity(item, index)"
             >
@@ -50,7 +52,6 @@
           <!-- {{ item.name }} -->
           <el-switch
             v-model="item.visible"
-            size="large"
             :active-text="item.name"
             :style="{
               '--el-switch-on-color': item.color,
@@ -399,10 +400,13 @@ export default {
       // 创建一个overlay提示
       this.overlay = new Overlay({
         element: document.getElementById("popup"),
-        autoPan: false,
-        autoPanAnimation: {
-          duration: 250,
-        },
+        // position: [50, 50],
+        // positioning: "center-right",
+        // offset: [55, 250]
+        // autoPan: false,
+        // autoPanAnimation: {
+        //   duration: 250,
+        // },
       });
       // 使用ol.Map来创建地图
       this.map = new olMap({
@@ -657,11 +661,10 @@ export default {
           const companyInfo = companyList.filter((item) => {
             if (item.ContaminatedPlot == currentId) return item;
           });
-          console.log("companyInfo", companyInfo);
           _this.overlayInfo = companyInfo[0];
 
           var coordinate = evt.evt.coordinate;
-          // console.log("coordinate", coordinate);
+          console.log("coordinate", coordinate);
           const content = document.getElementById("popup-content");
           // 设置overlay的位置，从而显示在鼠标点击处
           // content.innerHTML = `
@@ -930,37 +933,30 @@ export default {
   height: 100%;
   .title {
     position: absolute;
-    background-color: rgba(8, 18, 28, 0.7) ;
+    background-color: rgba(8, 18, 28, 0.5);
     z-index: 9;
     top: 20px;
     font-size: 36px;
     padding: 5px 10px;
     border-radius: 5px;
     left: 50%;
-    color: #409eff;
+    color: #ccc;
     transform: translateX(-50%);
   }
 
   .menu-list {
     position: absolute;
     background-color: rgba(8, 18, 28, 0.7);
-    // border-radius: 4px;
-    right: 20px;
+    left: 20px;
     top: 25%;
-    // width: 300px;
-    // height: 450px;
     z-index: 999;
+    width: 250px;
     padding: 10px 10px;
     border-radius: 8px;
     transition: all 0.5s;
-    // overflow-y: scroll;
-    // border-radius: 8px;
+
     ul {
-      // display: flex;
       height: 100%;
-      // flex-direction: column;
-      // justify-content: flex-start;
-      // align-content: center;
       li {
         line-height: 1.8;
         // height: 15%;
@@ -976,19 +972,14 @@ export default {
         }
       }
     }
-    // &:hover {
-    //   right: 2px;
-    // }
   }
   .scrollbar-demo-item {
     display: flex;
     align-items: center;
-    // justify-content: center;
-    height: 40px;
-    // width: 200px;
+    line-height: 1.5;
     margin: 10px;
     text-align: left;
-    font-size: 24px;
+    font-size: 16px;
     border-radius: 4px;
     color: #bbb;
     white-space: nowrap;
@@ -1002,9 +993,9 @@ export default {
 
   .show-list {
     position: absolute;
-    left: 2%;
-    top: 5%;
-    // width: 140px;
+    left: 20px;
+    top: 11%;
+    width: 250px;
     // height: 130px;
     padding: 10px 15px;
     background-color: rgba(8, 18, 28, 0.7);
@@ -1018,7 +1009,7 @@ export default {
       li {
         line-height: 1.8;
         height: 15%;
-        text-align: right;
+        text-align: left;
         cursor: pointer;
         color: #bbb;
       }
@@ -1030,7 +1021,7 @@ export default {
   }
 }
 .el-switch--large .el-switch__label * {
-  font-size: 28px;
+  font-size: 18px;
 }
 
 .ol-popup {
@@ -1110,6 +1101,6 @@ export default {
   font-size: 18px;
 }
 .el-switch__label.is-active {
-  color: #409eff;
+  color: #fff;
 }
 </style>
