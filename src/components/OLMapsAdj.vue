@@ -1,6 +1,6 @@
 <template>
   <div id="map" ref="map"></div>
-  <div>
+  <div class="options">
     显示/隐藏：
     <input
       type="checkbox"
@@ -21,7 +21,7 @@
       @click="checkVector($event)"
     />矢量图
   </div>
-  <div>
+  <div class="options">
     图层顺序：
     <input
       name="seq"
@@ -498,7 +498,11 @@ export default {
       //   console.log(res.data);
       //   this.addGeoJSON(res.data);
       // });
-      axios.get("/json/sxhn.geojson").then((res) => {
+      // axios.get("/json/sxhn.geojson").then((res) => {
+      //   console.log(res.data);
+      //   this.addGeoJSON(res.data);
+      // });
+      axios.get("/show/wurandiqu.geojson").then((res) => {
         console.log(res.data);
         this.addGeoJSON(res.data);
       });
@@ -602,7 +606,7 @@ export default {
   },
 };
 </script>
-<style lang="less">
+<style lang="less" scoped>
 #map {
   width: 100%;
   height: 800px;
@@ -653,5 +657,8 @@ td {
 }
 .ol-popup-closer:after {
   content: "✖";
+}
+.options{
+  bottom: 10px;
 }
 </style>

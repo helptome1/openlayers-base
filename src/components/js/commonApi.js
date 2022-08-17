@@ -340,7 +340,35 @@ function gaodeTranslate() {
     projzh_gd.gmerc2smerc
   );
 }
-
+/**
+ * GCJ02 转换为 WGS84
+ * @param lng
+ * @param lat
+ * @returns {*[]}
+ */
+function gcj02towgs84(lng, lat) {
+  //定义一些常量
+  const PI = 3.1415926535897932384626;
+  const a = 6378245.0;  //长半轴
+  const ee = 0.00669342162296594323; //扁率
+  lat = +lat
+  lng = +lng
+  if (out_of_china(lng, lat)) {
+    return [lng, lat]
+  } else {
+    let dlat = transformlat(lng - 105.0, lat - 35.0)
+    let dlng = transformlng(lng - 105.0, lat - 35.0)
+    let radlat = lat / 180.0 * PI
+    let magic = Math.sin(radlat)
+    magic = 1 - ee * magic * magic
+    let sqrtmagic = Math.sqrt(magic)
+    dlat = (dlat * 180.0) / ((a * (1 - ee)) / (magic * sqrtmagic) * PI)
+    dlng = (dlng * 180.0) / (a / sqrtmagic * Math.cos(radlat) * PI)
+    let mglat = lat + dlat
+    let mglng = lng + dlng
+    return [lng * 2 - mglng, lat * 2 - mglat]
+  }
+}
 /**
  * 百度坐标系转换
  */
@@ -375,5 +403,6 @@ export {
   baiduProj,
   addBaiduLayer,
   changeTheme,
+  gcj02towgs84
   // flyTo
 }

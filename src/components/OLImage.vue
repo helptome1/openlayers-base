@@ -56,9 +56,9 @@ import { pointerMove } from "ol/events/condition";
 // 导入axios
 import axios from "axios";
 
-/**
- * 矢量图
- */
+import {
+  gaodeTranslate,
+} from "./js/commonApi";
 
 export default {
   data() {
@@ -79,6 +79,7 @@ export default {
      * 初始化地图
      */
     initMap() {
+      gaodeTranslate();
       // 地图设置中心，设置到成都，在本地离线地图 offlineMapTiles刚好有一张zoom为4的成都瓦片
       var center = transform([0, 0], "EPSG:4326", "EPSG:3857");
       // 计算图片映射到地图上的范围，保持比例的情况下。 放大1000倍 除以2 让图片中心点和地图中心点重合
@@ -183,13 +184,14 @@ export default {
         //   featureProjection: "EPSG:3857", // 设定当前地图使用的feature的坐标系
         // }),
         // 写法2
-        url: "/json/sxhn.geojson",
-        projection: "EPSG:4326",
+        url: "/show/sichuandaxue.geojson",
+        projection: "EPSG:3857",
         format: new GeoJSON(),
       });
       // 创建一个矢量地图图层
       var geoLayer = new VectorLayer({
         source: geoSourece,
+        projection: "GCJ-02",
         // 设置样式，边框和填充
         style: function (feature, demo) {
           return new Style({
@@ -197,10 +199,10 @@ export default {
               color: "green",
               width: 2,
             }),
-            fill: new Fill({
-              color: "red",
-              color: feature.get("COLOR"),
-            }),
+            // fill: new Fill({
+            //   color: "red",
+            //   color: feature.get("COLOR"),
+            // }),
           });
         },
       });
@@ -219,7 +221,7 @@ export default {
     // 使用axios获取数据
     getGeoJson() {
       // axios.get("../../public/json/data.geojson").then((res) => {});
-      axios.get("/json/sxhn.geojson").then((res) => {
+      axios.get("/show/sichuandaxue.geojson").then((res) => {
         this.addGeoJSON(res.data);
       });
       // axios
@@ -398,5 +400,4 @@ td {
 .ol-popup-closer:after {
   content: "✖";
 }
-
 </style>
