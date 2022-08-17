@@ -21,7 +21,7 @@
               v-model="item.visible"
               size="small"
               :inactive-text="item.name"
-              style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949"
+              style="--el-switch-on-color: #ff4949; --el-switch-off-color: #ff4949"
             />
         </li>
       </ul>
