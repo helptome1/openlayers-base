@@ -3,7 +3,7 @@
     <div class="title">四川省土壤环境一张图</div>
     <!-- 菜单列表 -->
     <div class="menu-list">
-      <el-tabs v-model="TabActiveName" class="demo-tabs">
+      <el-tabs v-model="TabActiveName" :stretch="true" class="demo-tabs">
         <el-tab-pane label="农用地区" name="first">
           <el-scrollbar height="400px">
             <span
@@ -68,36 +68,36 @@
     <a href="#" id="popup-closer" class="ol-popup-closer"></a>
     <div id="popup-content">
       <table v-if="overlayInfo && overlayInfo.Type === 'pollute'">
-        <tr style="white-space: nowrap">
+        <tr style="white-space: nowrap; text-align: left;">
           <td>监管单位：</td>
           <td>{{ overlayInfo.Name }}</td>
         </tr>
-        <tr style="white-space: nowrap">
+        <tr style="white-space: nowrap; text-align: left;">
           <td>地块类型：</td>
           <td>{{ overlayInfo.AreaType }}</td>
         </tr>
-        <tr style="white-space: nowrap">
+        <tr style="white-space: nowrap; text-align: left;">
           <td>所属行业：</td>
           <td>{{ overlayInfo.Industry }}</td>
         </tr>
       </table>
       <table v-else-if="overlayInfo && overlayInfo.Type === 'company'">
-        <tr style="white-space: nowrap">
+        <tr style="white-space: nowrap; text-align: left;">
           <td>监管单位：</td>
           <td>{{ overlayInfo.Name }}</td>
         </tr>
-        <tr style="white-space: nowrap">
+        <tr style="white-space: nowrap;  text-align: left;">
           <td>企业类型：</td>
           <td>{{ overlayInfo.EnterprisType }}</td>
         </tr>
-        <tr style="white-space: nowrap">
+        <tr style="white-space: nowrap; text-align: left;">
           <td>监管状态：</td>
           <td>{{ overlayInfo.Status }}</td>
         </tr>
       </table>
-      <!-- <div v-else>
+      <div v-else>
         <img class="imgInfo" src="/image/farm.png" alt="" />
-      </div> -->
+      </div>
     </div>
   </div>
 </template>
@@ -222,6 +222,8 @@ export default {
       activitySelectFarmIndex: null,
       // 当前活跃的监管单位
       pointActiveFeatures: null,
+      // 当前活跃的农用地
+      farmAreaActiveFeature: null,
       overlayInfo: null,
       overlayInfoContent: [],
       flyFlag: true,
@@ -274,6 +276,9 @@ export default {
         cta_w: ".tianditu.gov.cn/cta_w/wmts?tk=",
       },
       tiandiTuTk: "20671382c71c11dac5d763aab0185146",
+      // 演示使用
+      // tiandiTuTk: "df269ecc24afb3eec74690c2cfe0fd44",
+
     };
   },
   methods: {
@@ -562,7 +567,7 @@ export default {
             const polluteAreaInfo = polluteAreaList.filter((item) => {
               if (item.No == currentId) return item;
             });
-            console.log("polluteAreaInfo", polluteAreaInfo);
+
             _this.overlayInfo = polluteAreaInfo[0];
             _this.polluteAreaActiveFeature = feature;
             feature.setStyle(
@@ -665,7 +670,6 @@ export default {
           _this.overlayInfo = companyInfo[0];
 
           var coordinate = evt.evt.coordinate;
-          console.log("coordinate", coordinate);
           const content = document.getElementById("popup-content");
           // 设置overlay的位置，从而显示在鼠标点击处
           // content.innerHTML = `
@@ -714,13 +718,22 @@ export default {
         // 开启监听事件
         this.registerEvents(farmFeature, "mousemove", (evt, feature) => {
           var coordinate = evt.evt.coordinate;
-          // console.log("coordinate", coordinate);
+          _this.farmAreaActiveFeature = feature;
+          feature.setStyle(            
+            new Style({
+              stroke: new Stroke({
+                color: strokeColor,
+                width: 5,
+              }),
+              fill: new Fill({
+                color: fillColor,
+              }),
+            })
+          )
           const content = document.getElementById("popup-content");
-          // 设置overlay的位置，从而显示在鼠标点击处
-          // content.innerHTML = `
-          // <h4>${someFeature.get("code") ?? "缺少code属性"}</h4>
-          // `;
+  
           _this.overlay.setPosition(coordinate);
+          // _this.overlay.setPositioning('center-right');
         });
       });
     },
@@ -769,12 +782,11 @@ export default {
       const _this = this;
       const zoom = this.mapView.getZoom();
       const endZoom = 15;
-      console.log("zoom", zoom);
-      console.log("distance", distance);
+      // console.log("zoom", zoom);
+      // console.log("distance", distance);
       let parts = 2;
       let called = false;
       function callback(complete) {
-        console.log("over");
         --parts;
         if (called) {
           return;
@@ -885,6 +897,7 @@ export default {
             transform(coordinate, "EPSG:3857", "EPSG:4326")
           );
         } else {
+          // 如果有选中的polluteLayer
           if (_this.polluteAreaActiveFeature) {
             _this.polluteAreaActiveFeature.setStyle(
               new Style({
@@ -914,8 +927,23 @@ export default {
               })
             );
           }
+          // 如果有选中的farmArea
+          if (_this.farmAreaActiveFeature) {
+            _this.farmAreaActiveFeature.setStyle(
+              new Style({
+                stroke: new Stroke({
+                  color: "rgba(50, 224, 169, 1)",
+                  width: 2,
+                }),
+                fill: new Fill({
+                  color: "rgba(50, 224, 169, 0.3)",
+                }),
+              })
+            )
+          }
+
           // 取消弹窗
-          // _this.overlay.setPosition(undefined);
+          _this.overlay.setPosition(undefined);
           _this.overlayInfo = null;
         }
       });
@@ -939,9 +967,11 @@ export default {
     top: 20px;
     font-size: 36px;
     padding: 5px 10px 5px 18px;
+    letter-spacing: 8px;
+    font-weight: 700;
     border-radius: 5px;
     left: 50%;
-    color: #ccc;
+    color: #fff;
     transform: translateX(-50%);
   }
 
@@ -1031,10 +1061,10 @@ export default {
 .ol-popup {
   position: absolute;
   background-color: black !important;
-  opacity: 0.7;
+  opacity: 0.8;
   color: #fff;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
-  padding: 5px;
+  padding: 10px;
   border-radius: 10px;
   // border: 1px solid #cccccc;
   bottom: 12px;
@@ -1057,12 +1087,12 @@ export default {
   pointer-events: none;
 }
 
-.ol-popup:after {
-  border-top-color: white;
-  border-width: 10px;
-  left: 48px;
-  margin-left: -10px;
-}
+// .ol-popup:after {
+//   border-top-color: white;
+//   border-width: 10px;
+//   left: 48px;
+//   margin-left: -10px;
+// }
 
 .ol-popup:before {
   border-top-color: #cccccc;
@@ -1078,9 +1108,9 @@ export default {
   right: 8px;
 }
 
-.ol-popup-closer:after {
-  content: "✖";
-}
+// .ol-popup-closer:after {
+//   content: "✖";
+// }
 
 /*滚动条的宽度*/
 ::-webkit-scrollbar {

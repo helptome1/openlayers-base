@@ -18,9 +18,9 @@ li {
   color: #409eff !important;
 }
 
-.el-tabs__nav {
+/* .el-tabs__nav {
   transform: translateX(15px) !important;
-}
+} */
 
 .el-switch--small .el-switch__label * {
   font-size: 18px !important;
