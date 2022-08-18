@@ -11,7 +11,7 @@
       <router-link to="/learn">Go to learn</router-link>------>
 
 
-      <router-link to="/base">Go to Base</router-link>---- 
+      <!-- <router-link to="/base">Go to Base</router-link>---- 
       <router-link to="/openHot">OpenLayersHotMap</router-link>----
       <router-link to="/OlBase">OLBase</router-link>----
       <router-link to="/OlVector">OlVector</router-link>----
@@ -23,7 +23,7 @@
       <router-link to="/LocalTile">LocalTile</router-link>----
       <router-link to="/MapAdj">MapAdj</router-link>----
       <router-link to="/show">OLSHOW</router-link>----
-      <router-link to="/draw">draw</router-link>----
+      <router-link to="/draw">draw</router-link>---- -->
       
       <!-- <router-link to="/Tencent">腾讯地图</router-link>---- -->
     <!-- </ul> -->

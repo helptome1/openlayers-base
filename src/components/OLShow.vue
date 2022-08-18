@@ -16,6 +16,7 @@
               }"
               @click="gotoCity(item, index)"
             >
+              <img class="farm-icon" :src="useImg(item)" alt="">
               {{ item.properties.name }}
             </span>
           </el-scrollbar>
@@ -65,11 +66,29 @@
           :key="index"
           :class="{ active: item.visible }"
           @click="isVisible(item)"
+          @mouseenter="showTip(index)"
+          @mouseleave="showTip(index)"
         >
           <img class="show-list-img" :src="item.icon" alt="" />
           <span>
             {{ item.name }}
           </span>
+          <div class="tip" v-if="index == 1 && isShowTip">
+            <div>
+              <img class="show-list-img" src="/image/farm-safe.png" alt="">
+              优先保护类
+            </div>
+            <div>
+              <img class="show-list-img" src="/image/farm-control1.png" alt="">
+              严格管控类
+            </div>
+            <div>
+              <img class="show-list-img" src="/image/farm-use1.png" alt="">
+              安全利用类
+            </div>
+          </div>
+
+
           <!-- <el-switch
             v-model="item.visible"
             :active-text="item.name"
@@ -210,13 +229,12 @@ import farmControlImg from "/image/farm-control1.png";
 import farmSafeImg from "/image/farm-safe.png";
 import watchImg from "/image/watch1.png";
 
-import BlueIcon from "/image/blueIcon.png";
-
 export default {
   data() {
     return {
       map: null,
       tiandiLayer: null,
+      isShowTip: false,
       baiduLayer: null,
       AmapLayer: null,
       pointLayer: null,
@@ -478,7 +496,7 @@ export default {
       this.overlay = new Overlay({
         element: document.getElementById("popup"),
         positioning: "center-left",
-        offset: [12, 0],
+        offset: [15, 0],
       });
       // 使用ol.Map来创建地图
       this.map = new olMap({
@@ -650,7 +668,6 @@ export default {
           this.polluteLayer.getSource().getFeatures(),
           "mousemove",
           (evt, feature) => {
-            console.log("feature", feature);
             let polluteAreaInfo = null;
             const featureName = feature.get("name");
             if (featureName != "pollutePoint") {
@@ -920,6 +937,7 @@ export default {
       const _this = this;
       // 控制不让overlay消失
       _this.overlayKey = false;
+      _this.overlayInfo = null;
       _this.overlay.setPosition(undefined);
       if (_this.flyFlag) {
         // 控制动画打断
@@ -1006,6 +1024,7 @@ export default {
       item.visible = !item.visible;
       this.mapView.animate({
         zoom: 8,
+        center: transform([104.065735, 30.659462], "EPSG:4326", "EPSG:3857"),
         duration: 2000,
       });
     },
@@ -1128,11 +1147,25 @@ export default {
         }
       });
     },
+
+    useImg(item) {
+      const level = item.properties.level
+      if(level === "1") return farmControlImg
+      if(level === "2") return farmSafeImg
+      if(level === "3") return farmImg
+    },
+    showTip(index) {
+      if(index === 1) {
+        this.isShowTip = !this.isShowTip
+      }
+    }
   },
   mounted() {
     this.initMap(); //初始化地图
   },
-  computed: {},
+  computed: {
+
+  },
 };
 </script>
 <style lang="less">
@@ -1165,7 +1198,10 @@ export default {
     padding: 10px 10px;
     border-radius: 8px;
     transition: all 0.5s;
-
+    .farm-icon {
+      width: 18px;
+      margin-right: 5px;
+    }
     ul {
       height: 100%;
       li {
@@ -1230,6 +1266,13 @@ export default {
           width: 18px;
           margin-right: 5px;
           vertical-align: text-bottom;
+        }
+        .tip {
+          position: absolute;
+          top: 50%;
+          transform: translateY(-50%);
+          right: 5px;
+          // background-color: black;
         }
       }
 
