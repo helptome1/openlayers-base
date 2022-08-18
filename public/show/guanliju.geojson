@@ -16,7 +16,7 @@
           "w009",
           "w010"
         ],
-        "Type": "company",
+        "type": "company",
         "name": "红星电镀有限公司"
       },
       "geometry": {
@@ -42,7 +42,7 @@
           "w001",
           "w002"
         ],
-        "Type": "company",
+        "type": "company",
         "name": "华鑫通用机械有限公司"
       },
       "geometry": {
@@ -68,7 +68,7 @@
           "w003",
           "w008"
         ],
-        "Type": "company",
+        "type": "company",
         "name": "武侯产业发展投资管理集团有限公司"
       },
       "geometry": {
@@ -94,7 +94,7 @@
           "w012",
           "w013"
         ],
-        "Type": "company",
+        "type": "company",
         "name": "长虹家电"
       },
       "geometry": {
@@ -120,7 +120,7 @@
           "w0014",
           "w015"
         ],
-        "Type": "company",
+        "type": "company",
         "name": "长虹家电"
       },
       "geometry": {
@@ -145,7 +145,7 @@
         "cId": [
           "w019"
         ],
-        "Type": "company",
+        "type": "company",
         "name": "宜宾华威电声有限公司"
       },
       "geometry": {
@@ -170,7 +170,7 @@
         "cId": [
           "w020"
         ],
-        "Type": "company",
+        "type": "company",
         "name": "攀枝花市鸿硕工贸有限公司 "
       },
       "geometry": {
@@ -195,7 +195,7 @@
         "cId": [
           "w018"
         ],
-        "Type": "company",
+        "type": "company",
         "name": "成都市团结电力结构厂"
       },
       "geometry": {
@@ -215,7 +215,7 @@
           "w004",
           "w005"
         ],
-        "Type": "company",
+        "type": "company",
         "name": "成都科尔达皮业有限责任公司"
       },
       "geometry": {
@@ -241,7 +241,7 @@
         "cId": [
           "w017"
         ],
-        "Type": "company",
+        "type": "company",
         "name": "成都市千瑞达制革有限责任公司"
       },
       "geometry": {
@@ -267,7 +267,7 @@
         "cId": [
           "w016"
         ],
-        "Type": "company",
+        "type": "company",
         "name": "华福润滑油厂"
       },
       "geometry": {
@@ -293,7 +293,7 @@
         "cId": [
           "w011"
         ],
-        "Type": "company",
+        "type": "company",
         "name": "成都宁江昭和汽车零部件有限公司"
       },
       "geometry": {
@@ -319,7 +319,7 @@
         "cId": [
           "w007"
         ],
-        "Type": "company",
+        "type": "company",
         "name": "四川宁江山川机械有限责任公司"
       },
       "geometry": {
@@ -345,7 +345,7 @@
         "cId": [
           "w006"
         ],
-        "Type": "company",
+        "type": "company",
         "name": "德阳市锦程化工有限公司"
       },
       "geometry": {

@@ -105,10 +105,11 @@ export default {
       // 创建一个overlay提示
       this.overlay = new Overlay({
         element: document.getElementById("popup"),
-        autoPan: true,
-        autoPanAnimation: {
-          duration: 250,
-        },
+        positioning: "center-left",
+        // autoPan: true,
+        // autoPanAnimation: {
+        //   duration: 250,
+        // },
       });
       // 使用ol.Map来创建地图
       this.map = new olMap({

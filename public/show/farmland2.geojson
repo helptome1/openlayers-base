@@ -6,6 +6,7 @@
       "properties": {
         "code": "n001",
         "name": "宜宾市高县蕉村镇龙潭村长冲沟组",
+        "level": "1",
         "type": "farm",
         "center": [
           104.5770783,
@@ -92,6 +93,7 @@
       "properties": {
         "code": "n002",
         "name": "宜宾市高县蕉村镇联合村鲁家村1组",
+        "level": "3",
         "type": "farm",
         "center": [
           104.5898108,
@@ -222,6 +224,7 @@
       "properties": {
         "code": "n003",
         "name": "宜宾市高县蕉村镇联合村鲁家村1组",
+        "level": "2",
         "type": "farm",
         "center": [
           104.60168618,
@@ -292,6 +295,7 @@
       "properties": {
         "code": "n004",
         "name": "宜宾市高县蕉村镇龙潭村元包田组",
+        "level": "3",
         "type": "farm",
         "center": [
           104.56661298,
@@ -398,6 +402,7 @@
       "properties": {
         "code": "n005",
         "name": "宜宾市高县蕉村镇龙潭村长滩沟组",
+        "level": "3",
         "type": "farm",
         "center": [
           104.57376277,
@@ -492,6 +497,7 @@
       "properties": {
         "code": "n006",
         "name": "宜宾市江安县桐梓镇合香村厂界南40m",
+        "level": "3",
         "type": "farm",
         "center": [
           105.1008147,
@@ -578,6 +584,7 @@
       "properties": {
         "code": "n007",
         "name": "宜宾市江安县桐梓镇合香村厂界南200m",
+        "level": "3",
         "type": "farm",
         "center": [
           105.10818637,
@@ -652,6 +659,7 @@
       "properties": {
         "code": "n008",
         "name": "宜宾市江安县桐梓镇合香村厂界西60m",
+        "level": "1",
         "type": "farm",
         "center": [
           105.10826814,
@@ -714,6 +722,7 @@
       "properties": {
         "code": "n009",
         "name": "宜宾市江安县桐梓镇合香村",
+        "level": "3",
         "type": "farm",
         "center": [
           105.09137077,
@@ -772,6 +781,7 @@
       "properties": {
         "code": "n010",
         "name": "宜宾市江安县桐梓镇合香村厂界东50m",
+        "level": "3",
         "type": "farm",
         "center": [
           105.09964046,
@@ -826,6 +836,7 @@
       "properties": {
         "code": "n011",
         "name": "宜宾市长宁县梅硐镇马坪村厂界北",
+        "level": "2",
         "type": "farm",
         "center": [
           105.00899808,
@@ -880,6 +891,7 @@
       "properties": {
         "code": "n012",
         "name": "宜宾市长宁县梅硐镇马坪村厂界东",
+        "level": "3",
         "type": "farm",
         "center": [
           105.01231367,
@@ -946,6 +958,7 @@
       "properties": {
         "code": "n013",
         "name": "宜宾市长宁县梅硐镇马坪村厂界西",
+        "level": "1",
         "type": "farm",
         "center": [
           105.01231367,
@@ -1028,6 +1041,7 @@
       "properties": {
         "code": "n014",
         "name": "宜宾市长宁县梅硐镇马坪村厂界南",
+        "level": "3",
         "type": "farm",
         "center": [
           105.00598782,

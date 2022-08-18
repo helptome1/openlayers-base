@@ -4,7 +4,7 @@
     <!-- 菜单列表 -->
     <div class="menu-list">
       <el-tabs v-model="TabActiveName" :stretch="true" class="demo-tabs">
-        <el-tab-pane label="农用地区" name="first">
+        <el-tab-pane label="农用地块" name="first">
           <el-scrollbar height="400px">
             <span
               v-for="(item, index) in farmAreaList"
@@ -20,7 +20,7 @@
             </span>
           </el-scrollbar>
         </el-tab-pane>
-        <el-tab-pane label="污染地区" name="second">
+        <el-tab-pane label="污染地块" name="second">
           <el-scrollbar height="400px">
             <p
               v-for="(item, index) in polluteList"
@@ -30,6 +30,23 @@
               :class="{
                 'scrollbar-demo-item-active':
                   index == activitySelectPolluteIndex,
+              }"
+              @click="gotoCity(item, index)"
+            >
+              {{ item.properties.name }}
+            </p>
+          </el-scrollbar>
+        </el-tab-pane>
+        <el-tab-pane label="监管单位" name="third">
+          <el-scrollbar height="400px">
+            <p
+              v-for="(item, index) in superviseList"
+              :key="item"
+              class="scrollbar-demo-item"
+              :title="item.properties.name"
+              :class="{
+                'scrollbar-demo-item-active':
+                  index == activitySelectCompanyIndex,
               }"
               @click="gotoCity(item, index)"
             >
@@ -49,8 +66,11 @@
           :class="{ active: item.visible }"
           @click="isVisible(item)"
         >
-          <!-- {{ item.name }} -->
-          <el-switch
+          <img class="show-list-img" :src="item.icon" alt="" />
+          <span>
+            {{ item.name }}
+          </span>
+          <!-- <el-switch
             v-model="item.visible"
             :active-text="item.name"
             size="small"
@@ -58,7 +78,7 @@
               '--el-switch-on-color': item.color,
               '--el-switch-off-color': '#dcdfe6',
             }"
-          />
+          /> -->
         </li>
       </ul>
     </div>
@@ -68,29 +88,29 @@
     <a href="#" id="popup-closer" class="ol-popup-closer"></a>
     <div id="popup-content">
       <table v-if="overlayInfo && overlayInfo.Type === 'pollute'">
-        <tr style="white-space: nowrap; text-align: left;">
+        <tr style="white-space: nowrap; text-align: left">
           <td>监管单位：</td>
           <td>{{ overlayInfo.Name }}</td>
         </tr>
-        <tr style="white-space: nowrap; text-align: left;">
+        <tr style="white-space: nowrap; text-align: left">
           <td>地块类型：</td>
           <td>{{ overlayInfo.AreaType }}</td>
         </tr>
-        <tr style="white-space: nowrap; text-align: left;">
+        <tr style="white-space: nowrap; text-align: left">
           <td>所属行业：</td>
           <td>{{ overlayInfo.Industry }}</td>
         </tr>
       </table>
       <table v-else-if="overlayInfo && overlayInfo.Type === 'company'">
-        <tr style="white-space: nowrap; text-align: left;">
+        <tr style="white-space: nowrap; text-align: left">
           <td>监管单位：</td>
           <td>{{ overlayInfo.Name }}</td>
         </tr>
-        <tr style="white-space: nowrap;  text-align: left;">
+        <tr style="white-space: nowrap; text-align: left">
           <td>企业类型：</td>
           <td>{{ overlayInfo.EnterprisType }}</td>
         </tr>
-        <tr style="white-space: nowrap; text-align: left;">
+        <tr style="white-space: nowrap; text-align: left">
           <td>监管状态：</td>
           <td>{{ overlayInfo.Status }}</td>
         </tr>
@@ -184,6 +204,13 @@ import {
   addLayerToMap,
   gaodeTranslate,
 } from "./js/commonApi";
+import polluteImg from "/image/pollute1.png";
+import farmImg from "/image/farm-use1.png";
+import farmControlImg from "/image/farm-control1.png";
+import farmSafeImg from "/image/farm-safe.png";
+import watchImg from "/image/watch1.png";
+
+import BlueIcon from "/image/blueIcon.png";
 
 export default {
   data() {
@@ -212,18 +239,24 @@ export default {
       layers: [],
       overlay: null,
       projectionName: "GCJ-02",
+      // 监管单位列表
+      superviseList: [],
       // 农用地区列表
       farmAreaList: [],
       // 污染地区列表
       polluteList: [],
       // 当前活跃的污染区域
       polluteAreaActiveFeature: null,
+      pollutePointActiveFeature: null,
       activitySelectPolluteIndex: null,
       activitySelectFarmIndex: null,
+      activitySelectCompanyIndex: null,
       // 当前活跃的监管单位
       pointActiveFeatures: null,
       // 当前活跃的农用地
       farmAreaActiveFeature: null,
+      farmPointActiiveFeature: null,
+      farmPointImg: null,
       // 控制overlay显示隐藏开关
       overlayKey: true,
       overlayInfo: null,
@@ -243,22 +276,25 @@ export default {
       ],
       layerList: [
         {
-          name: "污染地区(6)",
+          name: "污染地块(6)",
           value: "polluteLayer",
           visible: true,
           color: "rgba(255, 109, 109,1)",
+          icon: polluteImg,
         },
         {
-          name: "农用地区(14)",
+          name: "农用地块(14)",
           value: "farmlandLayer",
           visible: true,
           color: "#32e0a9",
+          icon: farmImg,
         },
         {
           name: "重点监管单位(13)",
-          value: "pointLayer",
+          value: "superviseLayer",
           visible: true,
           color: "#20a2f4",
+          icon: watchImg,
         },
       ],
 
@@ -277,7 +313,7 @@ export default {
         cta_c: ".tianditu.gov.cn/cta_c/wmts?tk=",
         cta_w: ".tianditu.gov.cn/cta_w/wmts?tk=",
       },
-      tiandiTuTk: "20671382c71c11dac5d763aab0185146",
+      tiandiTuTk: import.meta.env.VITE_TIANDITU_TK,
       // 演示使用
       // tiandiTuTk: "df269ecc24afb3eec74690c2cfe0fd44",
       // shice
@@ -297,7 +333,35 @@ export default {
       const AmapLayer = new TileLayer({
         source: new XYZ({
           projection: "GCJ-02",
-          url: "http://wprd0{1-4}.is.autonavi.com/appmaptile?x={x}&y={y}&z={z}&lang=zh_cn&size=1&scl=2&style=7",
+          url: "http://wprd0{1-4}.is.autonavi.com/appmaptile?x={x}&y={y}&z={z}&lang=zh_cn&size=1&scl=1&style=6",
+          wrapX: false,
+          // 投影坐标系
+          tileGrid: new WMTSTileGrid({
+            // 获取范围的左上角坐标。
+            origin: getTopLeft(projectionExtent),
+            resolutions: resolutions,
+            matrixIds: matrixIds,
+          }),
+        }),
+        zIndex: 0,
+        opacity: 1,
+      });
+      return AmapLayer;
+    },
+    addGoogleLayer() {
+      const projection = getProjection("GCJ-02");
+      const projectionExtent = projection.getExtent();
+      const size = getWidth(projectionExtent) / 256;
+      const resolutions = new Array(19);
+      const matrixIds = new Array(19);
+      for (let z = 0; z < 19; ++z) {
+        resolutions[z] = size / Math.pow(2, z);
+        matrixIds[z] = z;
+      }
+      const AmapLayer = new TileLayer({
+        source: new XYZ({
+          projection: "GCJ-02",
+          url: "http://gac-geo.googlecnapps.cn/maps/vt?lyrs=s,h&hl=zh-CN&gl=CN&x={x}&y={y}&z={z}&src=app&scale=2",
           wrapX: false,
           // 投影坐标系
           tileGrid: new WMTSTileGrid({
@@ -384,6 +448,7 @@ export default {
      * 初始化地图
      */
     initMap() {
+      // console.log("TK:",import.meta.env.VITE_TIANDITU_TK)
       // 高德坐标系注册
       gaodeTranslate();
       // 添加高德地图
@@ -391,30 +456,29 @@ export default {
       // 添加天地图
       this.tiandiLayer = this.addTianduLayer();
       const tiandituLayer = this.addTianDiLayer();
+
+      const googleMapLayer = this.addGoogleLayer();
       this.mapView = new View({
-        center: transform([104.065735, 30.659462], "EPSG:4326", "GCJ-02"),
+        center: transform([104.065735, 30.659462], "EPSG:4326", "EPSG:3857"),
         // center: transform([108.9421, 34.2244], "EPSG:4326", "GCJ-02"),
         projection: "GCJ-02",
+        // projection: "EPSG:3857",
         zoom: 8,
         maxZoom: 19,
         minZoom: 2,
         constrainResolution: true,
       });
       const layers = [
-        this.tiandiLayer,
+        // this.tiandiLayer,
         // this.AmapLayer,
-        tiandituLayer,
+        googleMapLayer,
+        // tiandituLayer,
       ];
       // 创建一个overlay提示
       this.overlay = new Overlay({
         element: document.getElementById("popup"),
-        // position: [50, 50],
-        // positioning: "center-right",
-        // offset: [55, 250]
-        // autoPan: false,
-        // autoPanAnimation: {
-        //   duration: 250,
-        // },
+        positioning: "center-left",
+        offset: [12, 0],
       });
       // 使用ol.Map来创建地图
       this.map = new olMap({
@@ -452,54 +516,55 @@ export default {
     },
     // 注册弹窗取消事件
     closerClick(overlay) {
-      const _this = this
+      const _this = this;
       const closer = document.getElementById("popup-closer");
       closer.onclick = function () {
         overlay.setPosition(undefined);
         _this.overlayKey = true;
         // 取消污染区域高亮
-        _this.polluteAreaActiveFeature && _this.polluteAreaFeatureSetStyle(_this.polluteAreaActiveFeature, 2)
-        _this.farmAreaActiveFeature && _this.farmAreaFeatureSetStyle(_this.farmAreaActiveFeature, 2)
+        _this.polluteAreaActiveFeature &&
+          _this.polluteAreaFeatureSetStyle(_this.polluteAreaActiveFeature, 2);
+        _this.farmAreaActiveFeature &&
+          _this.farmAreaFeatureSetStyle(_this.farmAreaActiveFeature, 2);
         closer.blur();
         return false;
       };
     },
 
-    addPoint() {
-      /**
-       * 创建一个活动图标需要的feature，并设置位置。
-       */
-      this.pointLayer = new VectorLayer({
-        source: new VectorSource(),
-        projection: "EPSG:3857",
-        className: "point",
-        zIndex: 4,
-      });
-
+    /**
+     * 创建一个活动图标需要的feature，并设置位置。
+     */
+    addPoint(
+      layer,
+      imgSrc,
+      coordinate,
+      scale,
+      pointName,
+      offset = [0, 0],
+      linkFeatureId = ""
+    ) {
       // 创建一个活动图标需要的Feature，并设置位置
-      var activity = new Feature({
-        geometry: new Point(
-          // transform([108.9421, 34.2244], "EPSG:4326", this.projectionName)
-          transform([104.065735, 30.659462], "EPSG:4326", "EPSG:3857")
-          // fromLonLat([108.9421, 34.2244])
-        ),
+      const activity = new Feature({
+        geometry: new Point(transform(coordinate, "EPSG:4326", "EPSG:3857")),
+        name: pointName,
+        linkFeatureId: linkFeatureId,
       });
       // 设置Feature的样式，
       activity.setStyle(
         new Style({
           image: new Icon({
-            src: "/image/blueIcon.png",
+            src: imgSrc,
             anchor: [0.5, 60],
             anchorOrigin: "top-right",
             anchorXUnits: "fraction",
             anchorYUnits: "pixels",
-            offsetOrigin: "top-right",
-            // scale: 1,
+            offsetOrigin: "top-left",
+            offset: offset,
+            scale: scale,
           }),
         })
       );
-      this.pointLayer.getSource().addFeature(activity);
-      this.map.addLayer(this.pointLayer);
+      layer.getSource().addFeature(activity);
     },
     // 添加四川省的区域
     addGeoJSON(
@@ -507,7 +572,7 @@ export default {
       strokeColor = "",
       fillColor = "",
       layerName = "geojson",
-      featureProjection = "EPSG:4326"
+      zIndex = 1
     ) {
       // 创建geojson数据来源
       const geoSourece = new VectorSource({
@@ -516,7 +581,7 @@ export default {
           dataProjection: "EPSG:4326", // 设定JSON数据使用的坐标系
           featureProjection: "EPSG:3857", // 设定当前地图使用的feature的坐标系
         }),
-        projection: "GCJ-02",
+        // projection: "GCJ-02",
       });
       // 创建一个矢量地图图层
       const layer = new VectorLayer({
@@ -543,13 +608,14 @@ export default {
             });
           }
         },
+        zIndex: zIndex,
       });
       return layer;
     },
     // 获取四川省区域的内容。
     getGeoJson() {
       axios.get("/show/sichuan.geojson").then((res) => {
-        this.geoLayer = this.addGeoJSON(res.data, "pink", "", "province");
+        this.geoLayer = this.addGeoJSON(res.data, "pink", "", "province", 1);
         this.map.addLayer(this.geoLayer);
       });
     },
@@ -557,37 +623,62 @@ export default {
     getpolluteLayer() {
       const _this = this;
       axios.get("/show/polluteArea.json").then((res) => {
-        this.polluteList = res.data.features;
-        this.polluteLayer = this.addGeoJSON(
+        _this.polluteList = res.data.features;
+        _this.polluteLayer = this.addGeoJSON(
           res.data,
           "rgba(255, 109, 109,1)",
           "rgba(255, 109, 109,0.3)",
-          "pollute"
+          "pollute",
+          2
         );
-        this.map.addLayer(this.polluteLayer);
+        _this.map.addLayer(this.polluteLayer);
+        // 添加锚点
+        _this.polluteList.forEach((item) => {
+          _this.addPoint(
+            _this.polluteLayer,
+            polluteImg,
+            item.properties.center,
+            0.8,
+            "pollutePoint",
+            [-15, 0],
+            item.properties.code
+          );
+        });
+        // 添加地图标记点
         // 开启监听事件
         this.registerEvents(
           this.polluteLayer.getSource().getFeatures(),
           "mousemove",
           (evt, feature) => {
-            // 获取关联id
-            const currentId = feature.get("code");
-            const polluteAreaInfo = polluteAreaList.filter((item) => {
-              if (item.No == currentId) return item;
-            });
+            console.log("feature", feature);
+            let polluteAreaInfo = null;
+            const featureName = feature.get("name");
+            if (featureName != "pollutePoint") {
+              // 获取关联id
+              const currentId = feature.get("code");
+              polluteAreaInfo = polluteAreaList.filter((item) => {
+                if (item.No == currentId) return item;
+              });
+              _this.polluteAreaActiveFeature = feature;
+              _this.polluteAreaFeatureSetStyle(feature, 5);
+            } else {
+              _this.pollutePointActiveFeature = feature;
+              const linkFeatureId = feature.get("linkFeatureId");
+              polluteAreaInfo = polluteAreaList.filter((item) => {
+                if (item.No == linkFeatureId) return item;
+              });
+              // 高亮旗帜
+              _this.flagFeatureSetStyle(feature, 1.1, polluteImg,[-15, 0]);
+            }
+            // 给overInfo传值。
             _this.overlayInfo = polluteAreaInfo[0];
-            _this.polluteAreaActiveFeature = feature;
-            _this.polluteAreaFeatureSetStyle(feature, 5)
+
             var coordinate = evt.evt.coordinate;
             const content = document.getElementById("popup-content");
-            // 设置overlay的位置，从而显示在鼠标点击处
-            // content.innerHTML = `
-            // <h4>${someFeature.get("code") ?? "缺少code属性"}</h4>
-            // `;
             _this.overlay.setPosition(coordinate);
 
             // 关联监管单位高亮。
-            // const pointFeatures = _this.pointLayer.getSource().getFeatures();
+            // const pointFeatures = _this.superviseLayer.getSource().getFeatures();
             // for (let i = 0; i < pointFeatures.length; i++) {
             //   const cId = Array.prototype.slice.call(
             //     pointFeatures[i].get("cId")
@@ -627,35 +718,25 @@ export default {
     getSuperviseLayer() {
       const _this = this;
       axios.get("/show/guanliju.geojson").then((res) => {
+        this.superviseList = res.data.features;
         var reader = new GeoJSON({
           defaultDataProjection: "EPSG:4326",
           featureProjection: "EPSG:3857",
         });
 
-        this.pointLayer = new VectorLayer({
+        this.superviseLayer = new VectorLayer({
           className: "point",
+          zIndex: 4,
         });
         var pointSourceVector = new VectorSource();
-        this.pointLayer.setSource(pointSourceVector);
-        this.map.addLayer(this.pointLayer);
+        this.superviseLayer.setSource(pointSourceVector);
+        this.map.addLayer(this.superviseLayer);
         pointSourceVector.addFeatures(reader.readFeatures(res.data));
 
         // 给点设置样式。
         const features = pointSourceVector.getFeatures();
         features.forEach((item) => {
-          item.setStyle(
-            new Style({
-              image: new Icon({
-                src: "/image/blueIcon.png",
-                anchor: [0.5, 60],
-                anchorOrigin: "top-right",
-                anchorXUnits: "fraction",
-                anchorYUnits: "pixels",
-                offsetOrigin: "top-right",
-                scale: 0.8,
-              }),
-            })
-          );
+          _this.flagFeatureSetStyle(item, 0.8, watchImg);
         });
 
         // 添加自定义事件
@@ -665,13 +746,10 @@ export default {
             if (item.ContaminatedPlot == currentId) return item;
           });
           _this.overlayInfo = companyInfo[0];
-
+          _this.pointActiveFeatures = feature;
+          _this.flagFeatureSetStyle(feature, 1.1, watchImg);
           var coordinate = evt.evt.coordinate;
           const content = document.getElementById("popup-content");
-          // 设置overlay的位置，从而显示在鼠标点击处
-          // content.innerHTML = `
-          // <h4>${someFeature.get("code") ?? "缺少code属性"}</h4>
-          // `;
           _this.overlay.setPosition(coordinate);
         });
       });
@@ -684,20 +762,34 @@ export default {
         _this.farmAreaList = res.data.features;
         _this.farmlandLayer = _this.addGeoJSON(
           res.data,
-          // "rgba(50, 224, 169, 1)",
-          // "rgba(50, 224, 169, 0.3)",
-          "farmland"
+          "rgba(50, 224, 169, 1)",
+          "rgba(50, 224, 169, 0.3)",
+          "farmland",
+          3
         );
+        this.map.addLayer(this.farmlandLayer);
+
         const farmFeatures = _this.farmlandLayer.getSource().getFeatures();
         const strokeColor = "rgba(50, 224, 169, 1)";
         let fillColor = "rgba(50, 224, 169, 0.3)";
         farmFeatures.forEach((feature) => {
           const level = feature.get("level");
-          if (level === "严格管控类") {
-            fillColor = "rgba(255, 126, 0, 0.3)";
-          } else if (level === "优先保护类") {
+          const center = feature
+            .getGeometry()
+            .getInteriorPoint()
+            .getCoordinates();
+          let imgSrc = farmImg;
+          if (level === "1") {
             fillColor = "rgba(228, 82, 230, 0.3)";
+            imgSrc = farmControlImg;
+          } else if (level === "2") {
+            fillColor = "rgba(255, 126, 0, 0.3)";
+            imgSrc = farmSafeImg;
+          } else {
+            fillColor = "rgba(50, 224, 169, 0.3)";
+            imgSrc = farmImg;
           }
+
           feature.setStyle(
             new Style({
               stroke: new Stroke({
@@ -709,29 +801,44 @@ export default {
               }),
             })
           );
+
+          _this.addPoint(
+            _this.farmlandLayer,
+            imgSrc,
+            transform(center, "EPSG:3857", "EPSG:4326"),
+            1,
+            "farmPoint",
+            [-15, 0]
+          );
         });
-        this.map.addLayer(this.farmlandLayer);
 
         // 开启监听事件
-        this.registerEvents(farmFeatures, "mousemove", (evt, feature) => {
-          var coordinate = evt.evt.coordinate;
-          _this.farmAreaActiveFeature = feature;
-          feature.setStyle(            
-            new Style({
-              stroke: new Stroke({
-                color: strokeColor,
-                width: 5,
-              }),
-              fill: new Fill({
-                color: fillColor,
-              }),
-            })
-          )
-          const content = document.getElementById("popup-content");
-  
-          _this.overlay.setPosition(coordinate);
-          // _this.overlay.setPositioning('center-right');
-        });
+        this.registerEvents(
+          _this.farmlandLayer.getSource().getFeatures(),
+          "mousemove",
+          (evt, feature) => {
+            const featureName = feature.get("name");
+            if ("farmPoint" != featureName) {
+              _this.farmAreaFeatureSetStyle(feature, 5);
+              _this.farmAreaActiveFeature = feature;
+            } else {
+              const style = feature.getStyle();
+              _this.farmPointImg = style.getImage().iconImage_.src_;
+              _this.farmPointActiiveFeature = feature;
+              _this.flagFeatureSetStyle(
+                feature,
+                1.1,
+                _this.farmPointImg,
+                [-15, 0]
+              );
+            }
+            var coordinate = evt.evt.coordinate;
+            const content = document.getElementById("popup-content");
+
+            _this.overlay.setPosition(coordinate);
+            // _this.overlay.setPositioning('center-right');
+          }
+        );
       });
     },
 
@@ -741,34 +848,12 @@ export default {
 
       this.getGeoJson(); //加载geojson图层
       this.addPoint();
-      this.mapView.setZoom(5);
+      // this.mapView.setZoom(13);
     },
 
-    checkPoint(elem) {
-      this.pointLayer.setVisible(elem.target.checked);
-    },
     // 隐藏显示四川省区域
     checkVector(elem) {
       this.geoLayer.setVisible(elem.target.checked);
-    },
-
-    upAmap(elem) {
-      if (elem.target.checked) {
-        this.AmapLayer.setZIndex(2);
-        this.projectionName = "GCJ-02";
-        this.baiduLayer.setZIndex(this.baiduLayer.getZIndex() - 1);
-        this.tiandiLayer.setZIndex(this.tiandiLayer.getZIndex() - 1);
-        this.updateFeature();
-      }
-    },
-
-    // 置顶point图层到最上面
-    upPoint(elem) {
-      if (elem.target.checked) {
-        this.AmapLayer.setZIndex(3);
-        this.baiduLayer.setZIndex(this.baiduLayer.getZIndex() - 1);
-        this.AmapLayer.setZIndex(this.AmapLayer.getZIndex() - 1);
-      }
     },
 
     // 飞行动画
@@ -779,8 +864,6 @@ export default {
       const _this = this;
       const zoom = this.mapView.getZoom();
       const endZoom = 15;
-      // console.log("zoom", zoom);
-      // console.log("distance", distance);
       let parts = 2;
       let called = false;
       function callback(complete) {
@@ -837,63 +920,94 @@ export default {
       const _this = this;
       // 控制不让overlay消失
       _this.overlayKey = false;
+      _this.overlay.setPosition(undefined);
       if (_this.flyFlag) {
+        // 控制动画打断
         _this.flyFlag = false;
-        if ("farm" == item.properties.type) {
-          this.activitySelectFarmIndex = index;
-        } else {
-          this.activitySelectPolluteIndex = index;
+
+        switch (item.properties.type) {
+          // 农用地区
+          case "farm":
+            _this.activitySelectFarmIndex = index;
+            // 高亮农用地区
+            const farmFeatures = _this.farmlandLayer.getSource().getFeatures();
+            const theFarmFeature = farmFeatures.filter((feature) => {
+              return feature.id_ === item.id;
+            });
+
+            if (theFarmFeature[0]) {
+              _this.farmAreaFeatureSetStyle(theFarmFeature[0], 5);
+              _this.farmAreaActiveFeature = theFarmFeature[0];
+            }
+            break;
+
+          // 监管单位
+          case "company":
+            _this.activitySelectCompanyIndex = index;
+            // 拿到监管单位的信息
+            const companyInfo = companyList.filter((company) => {
+              if (company.ContaminatedPlot === item.properties.code)
+                return item;
+            });
+            // 控制监管单位的点样式变化.
+            const companyFeatures = _this.superviseLayer
+              .getSource()
+              .getFeatures();
+            const theCompanyFeature = companyFeatures.filter((feature) => {
+              return feature.id_ === item.id;
+            });
+            _this.pointActiveFeatures = theCompanyFeature[0];
+            // 图标大小变化
+            _this.flagFeatureSetStyle(theCompanyFeature[0], 0.8, watchImg);
+            _this.overlayInfo = companyInfo[0];
+            break;
+
+          // 污染地区
+          default:
+            _this.activitySelectPolluteIndex = index;
+            // 处理污染物点击高亮。
+            const polluteFeatures = this.polluteLayer.getSource().getFeatures();
+            const thePolluteFeature = polluteFeatures.filter((feature) => {
+              return feature.id_ === item.id;
+            });
+            if (thePolluteFeature.length > 0) {
+              _this.polluteAreaFeatureSetStyle(thePolluteFeature[0], 5);
+              _this.polluteAreaActiveFeature = thePolluteFeature[0];
+              // 从数据列表中拿到数据
+              const currentId = thePolluteFeature[0].get("code");
+              const polluteAreaInfo = polluteAreaList.filter((item) => {
+                if (item.No == currentId) return item;
+              });
+              _this.overlayInfo = polluteAreaInfo[0];
+            }
+            break;
         }
-
-        // 处理污染物点击高亮。
-        const polluteFeatures = this.polluteLayer.getSource().getFeatures();
-        const thePolluteFeature = polluteFeatures.filter((feature) => {
-          return feature.id_ === item.id;
-        });
-        if(thePolluteFeature.length > 0) {
-          _this.polluteAreaFeatureSetStyle(thePolluteFeature[0], 5);
-          _this.polluteAreaActiveFeature = thePolluteFeature[0];
-          // 从数据列表中拿到数据
-          const currentId = thePolluteFeature[0].get("code");
-          const polluteAreaInfo = polluteAreaList.filter((item) => {
-            if (item.No == currentId) return item;
-          });
-          _this.overlayInfo = polluteAreaInfo[0];
-        }
-
-        // 高亮农用地区
-        console.log("item", item);
-
-        const farmFeatures = _this.farmlandLayer.getSource().getFeatures();
-        const theFarmFeature = farmFeatures.filter((feature) => {
-          return feature.id_ === item.id;
-        });
-
-        console.log("theFarmFeature",theFarmFeature[0]);
-        if(theFarmFeature[0] ) {
-          _this.farmAreaFeatureSetStyle(theFarmFeature[0], 5)
-          _this.farmAreaActiveFeature = theFarmFeature[0]
-        }
-
+        const coordinate = item.properties.center ?? item.geometry.coordinates;
         // 飞跃
-        _this.flyTo(item.properties.center, function () {
+        _this.flyTo(coordinate, function () {
           _this.flyFlag = true;
-
-          _this.overlay.setPosition(transform(item.properties.center, "EPSG:4326", "EPSG:3857"));
+          _this.overlay.setPosition(
+            transform(coordinate, "EPSG:4326", "EPSG:3857")
+          );
         });
       }
     },
 
     isVisible(item) {
       if (item.value == "polluteLayer") {
-        this.polluteLayer.setVisible(item.visible);
+        this.polluteLayer.setVisible(!item.visible);
       } else if (item.value === "geoLayer") {
-        this.geoLayer.setVisible(item.visible);
+        this.geoLayer.setVisible(!item.visible);
       } else if (item.value === "farmlandLayer") {
-        this.farmlandLayer.setVisible(item.visible);
+        this.farmlandLayer.setVisible(!item.visible);
       } else {
-        this.pointLayer.setVisible(item.visible);
+        this.superviseLayer.setVisible(!item.visible);
       }
+      item.visible = !item.visible;
+      this.mapView.animate({
+        zoom: 8,
+        duration: 2000,
+      });
     },
 
     // 污染地区设置颜色
@@ -913,18 +1027,38 @@ export default {
     },
     // 农用地区颜色设置
     farmAreaFeatureSetStyle(feature, width) {
+      const style = feature.getStyle();
+      const strokeStyle = style.getStroke();
+      const FillStyle = style.getFill();
       feature.setStyle(
         new Style({
           stroke: new Stroke({
-            color: "rgba(50, 224, 169, 1)",
+            color: strokeStyle.color_,
             width: width,
           }),
           fill: new Fill({
-            color: "rgba(50, 224, 169, 0.3)",
+            color: FillStyle.color_,
           }),
         })
       );
       // this.farmAreaActiveFeature = null
+    },
+    // 标记大小变化
+    flagFeatureSetStyle(feature, scale, src, offset = [0, 0]) {
+      feature.setStyle(
+        new Style({
+          image: new Icon({
+            src: src,
+            anchor: [0.5, 60],
+            anchorOrigin: "top-right",
+            anchorXUnits: "fraction",
+            anchorYUnits: "pixels",
+            offsetOrigin: "top-left",
+            offset: offset,
+            scale: scale,
+          }),
+        })
+      );
     },
 
     /**
@@ -933,8 +1067,7 @@ export default {
     listenEvent(map, event, overlay) {
       const _this = this;
       map.on(event, (evt) => {
-        console.log("overlayKey", _this.overlayKey);
-        if(_this.overlayKey) {
+        if (_this.overlayKey) {
           const someFeature = map.forEachFeatureAtPixel(
             evt.pixel,
             function (feature, layer) {
@@ -948,43 +1081,51 @@ export default {
             }
           );
           if (someFeature) {
-            // 添加overlap
-            var coordinate = evt.coordinate;
-            var hdms = olCoordinate.toStringHDMS(
-              transform(coordinate, "EPSG:3857", "EPSG:4326")
-            );
+            // console.log("somneFeature", someFeature);
           } else {
             // 如果有选中的polluteLayer
             if (_this.polluteAreaActiveFeature) {
-              _this.polluteAreaFeatureSetStyle(_this.polluteAreaActiveFeature, 2)
+              _this.polluteAreaFeatureSetStyle(
+                _this.polluteAreaActiveFeature,
+                2
+              );
               _this.polluteAreaActiveFeature = null;
             }
             if (_this.pointActiveFeatures) {
-              _this.pointActiveFeatures.setStyle(
-                new Style({
-                  image: new Icon({
-                    src: "/image/blueIcon.png",
-                    anchor: [0.5, 60],
-                    anchorOrigin: "top-right",
-                    anchorXUnits: "fraction",
-                    anchorYUnits: "pixels",
-                    offsetOrigin: "top-right",
-                    scale: 1,
-                  }),
-                })
-              );
+              _this.flagFeatureSetStyle(_this.pointActiveFeatures, 0.8, watchImg);
+              _this.pointActiveFeatures = null;
             }
             // 如果有选中的farmArea
             if (_this.farmAreaActiveFeature) {
-              _this.farmAreaFeatureSetStyle(_this.farmAreaActiveFeature, 2)
+              _this.farmAreaFeatureSetStyle(_this.farmAreaActiveFeature, 2);
               _this.farmAreaActiveFeature = null;
+            }
+
+            // 如果有选中的农用地falg
+            if (_this.farmPointActiiveFeature) {
+              _this.flagFeatureSetStyle(
+                _this.farmPointActiiveFeature,
+                0.8,
+                _this.farmPointImg,
+                [-15, 0]
+              );
+              _this.farmPointActiiveFeature = null;
+            }
+            // 如果选中了污染地块的flag
+            if (_this.pollutePointActiveFeature) {
+              _this.flagFeatureSetStyle(
+                _this.pollutePointActiveFeature,
+                1,
+                polluteImg,
+                [-15, 0]
+              );
             }
 
             // 取消弹窗
             _this.overlay.setPosition(undefined);
             _this.overlayInfo = null;
           }
-        } 
+        }
       });
     },
   },
@@ -1056,6 +1197,9 @@ export default {
     text-overflow: ellipsis;
     overflow: hidden;
     cursor: pointer;
+    &:hover {
+      color: #fff;
+    }
   }
   .scrollbar-demo-item-active {
     color: #409eff;
@@ -1082,6 +1226,11 @@ export default {
         text-align: left;
         cursor: pointer;
         color: #bbb;
+        .show-list-img {
+          width: 18px;
+          margin-right: 5px;
+          vertical-align: text-bottom;
+        }
       }
 
       .active {
@@ -1098,14 +1247,12 @@ export default {
 }
 
 .ol-popup {
-  position: absolute;
   background-color: black !important;
   opacity: 0.8;
   color: #fff;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
   padding: 10px;
   border-radius: 10px;
-  // border: 1px solid #cccccc;
   bottom: 12px;
   left: -50px;
   min-width: 280px;
@@ -1117,11 +1264,12 @@ export default {
 
 .ol-popup:after,
 .ol-popup:before {
-  top: 100%;
+  top: 50%;
   border: solid transparent;
   content: " ";
   height: 0;
   width: 0;
+  transform: translateY(-50%);
   position: absolute;
   pointer-events: none;
 }
@@ -1134,17 +1282,17 @@ export default {
 // }
 
 .ol-popup:before {
-  border-top-color: #cccccc;
+  border-right-color: #cccccc;
   border-width: 11px;
-  left: 48px;
+  left: -11px;
   margin-left: -11px;
 }
 
 .ol-popup-closer {
   text-decoration: none;
   position: absolute;
-  top: 2px;
-  right: 8px;
+  top: 1px;
+  right: 6px;
   color: #fff;
 }
 

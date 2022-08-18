@@ -11,7 +11,8 @@ li {
 
 .el-tabs__item {
   color: #ccc !important;
-  font-size: 18px !important;
+  font-size: 17px !important;
+  padding: 0 4px !important;
 }
 
 .el-tabs__item.is-active {
@@ -24,4 +25,10 @@ li {
 
 .el-switch--small .el-switch__label * {
   font-size: 18px !important;
+}
+
+
+.el-tabs__nav-next,
+.el-tabs__nav-prev {
+  color: #fff !important;
 }
