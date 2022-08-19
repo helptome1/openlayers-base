@@ -85,12 +85,8 @@ export default {
   data() {
     return {
       map: null,
-      tiandiLayer: null,
       isShowTip: false,
-      baiduLayer: null,
       AmapLayer: null,
-      pointLayer: null,
-      circleLayer: null,
       // 污染地区图层
       polluteLayer: null,
       // 农用地区图层
@@ -100,7 +96,7 @@ export default {
       geoLayer: null,
       mapView: null,
       OMSLayer: null,
-      currentCoordinates: [104.065735, 30.659462],
+      currentCoordinates: [102.529257, 30.174407],
       // tab切换页面
       TabActiveName: "first",
       x: 0,
@@ -184,7 +180,7 @@ export default {
     },
     // google地图
     addGoogleLayer() {
-      return addXYZLayer("http://gac-geo.googlecnapps.cn/maps/vt?lyrs=s,h&hl=zh-CN&gl=CN&x={x}&y={y}&z={z}&src=app&scale=2", "GCJ-02");
+      return addXYZLayer("http://gac-geo.googlecnapps.cn/maps/vt?lyrs=s,h&hl=zh-CN&gl=CN&x={x}&y={y}&z={z}&src=app&scale=2");
     },
 
     /**
@@ -200,9 +196,8 @@ export default {
 
       this.mapView = new View({
         center: transform([102.529257, 30.174407], "EPSG:4326", "EPSG:3857"),
-        // center: transform([108.9421, 34.2244], "EPSG:4326", "GCJ-02"),
-        projection: "GCJ-02",
-        // projection: "EPSG:3857",
+        // projection: "GCJ-02",
+        projection: "EPSG:3857",
         zoom: 7,
         maxZoom: 19,
         minZoom: 2,
@@ -288,13 +283,12 @@ export default {
           dataProjection: "EPSG:4326", // 设定JSON数据使用的坐标系
           featureProjection: "EPSG:3857", // 设定当前地图使用的feature的坐标系
         }),
-        // projection: "GCJ-02",
       });
       // 创建一个矢量地图图层
       const layer = new VectorLayer({
         className: layerName,
         source: geoSourece,
-        projection: "GCJ-02",
+        projection: "EPSG:3857",
         style: function (feature, demo) {
           if (layerName === "province") {
             return new Style({
@@ -505,15 +499,6 @@ export default {
           // _this.overlay.setPositioning('center-right');
         });
       });
-    },
-
-    updateFeature() {
-      this.pointLayer.getSource().clear();
-      this.geoLayer.getSource().clear();
-
-      this.getGeoJson(); //加载geojson图层
-      this.addPoint();
-      // this.mapView.setZoom(13);
     },
 
     // 隐藏显示四川省区域
