@@ -177,6 +177,7 @@ export default {
     },
     addGeoJSON(src) {
       // 创建geojson数据来源
+      console.log(1)
       var geoSourece = new VectorSource({
         // 写法1
         // features: new GeoJSON().readFeatures(src, {
