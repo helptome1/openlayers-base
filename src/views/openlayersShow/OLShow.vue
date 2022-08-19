@@ -178,9 +178,11 @@ export default {
     };
   },
   methods: {
+    // 高德地图
     addAmapLayer() {
       return addXYZLayer("http://wprd0{1-4}.is.autonavi.com/appmaptile?x={x}&y={y}&z={z}&lang=zh_cn&size=1&scl=1&style=7", "GCJ-02");
     },
+    // google地图
     addGoogleLayer() {
       return addXYZLayer("http://gac-geo.googlecnapps.cn/maps/vt?lyrs=s,h&hl=zh-CN&gl=CN&x={x}&y={y}&z={z}&src=app&scale=2", "GCJ-02");
     },
@@ -207,15 +209,9 @@ export default {
         constrainResolution: true,
       });
       const layers = [
-        this.AmapLayer,
-        // googleMapLayer,
+        // this.AmapLayer,
+        googleMapLayer,
       ];
-      // 创建一个overlay提示
-      // this.overlay = new Overlay({
-      //   element: document.getElementById("popup"),
-      //   positioning: "center-left",
-      //   offset: [15, 0],
-      // });
       // 使用ol.Map来创建地图
       this.map = new olMap({
         // 地图图层
@@ -243,10 +239,8 @@ export default {
 
       // 管理局
       this.getSuperviseLayer();
-
-      // 弹窗取消
-      // this.closerClick(this.overlay);
     },
+
     // 注册弹窗取消事件
     closerClick(overlay) {
       this.overlayKey = true;
@@ -259,9 +253,7 @@ export default {
       this.listenEvent(this.map, "pointermove", this.overlay);
     },
 
-    /**
-     * 创建一个活动图标需要的feature，并设置位置。
-     */
+    // 创建一个活动图标需要的feature，并设置位置。
     addPoint(layer, imgSrc, coordinate, scale, pointName, offset = [0, 0], linkFeatureId = "") {
       // 创建一个活动图标需要的Feature，并设置位置
       const activity = new Feature({
@@ -286,6 +278,7 @@ export default {
       );
       layer.getSource().addFeature(activity);
     },
+
     // 添加四川省的区域
     addGeoJSON(src, strokeColor = "", fillColor = "", layerName = "geojson", zIndex = 1) {
       // 创建geojson数据来源
@@ -326,6 +319,7 @@ export default {
       });
       return layer;
     },
+
     // 获取四川省区域的内容。
     getGeoJson() {
       axios.get("/show/sichuan.geojson").then((res) => {
@@ -333,6 +327,7 @@ export default {
         this.map.addLayer(this.geoLayer);
       });
     },
+
     // 获取污染区域的内容
     getpolluteLayer() {
       const _this = this;
@@ -692,6 +687,7 @@ export default {
       );
       // this.polluteAreaActiveFeature = null
     },
+
     // 农用地区颜色设置
     farmAreaFeatureSetStyle(feature, width) {
       const style = feature.getStyle();
@@ -710,6 +706,7 @@ export default {
       );
       // this.farmAreaActiveFeature = null
     },
+
     // 标记大小变化
     flagFeatureSetStyle(feature, scale, src, offset = [0, 0]) {
       feature.setStyle(
@@ -728,13 +725,10 @@ export default {
       );
     },
 
-    /**
-     * 监听事件
-     */
+    // 监听事件
     listenEvent(map, event, overlay) {
       const _this = this;
       map.on(event, (evt) => {
-        console.log("_this.overlayKey", _this.overlayKey);
         if (_this.overlayKey) {
           const someFeature = map.forEachFeatureAtPixel(evt.pixel, function (feature, layer) {
             // 自定义事件
@@ -780,6 +774,7 @@ export default {
         }
       });
     },
+
     showTip(index) {
       if (index === 1) {
         this.isShowTip = !this.isShowTip;
@@ -789,7 +784,6 @@ export default {
   mounted() {
     this.initMap(); //初始化地图
   },
-  computed: {},
 };
 </script>
 <style lang="less">
