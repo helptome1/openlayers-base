@@ -9,12 +9,9 @@ import { createRouter, createWebHistory } from "vue-router";
 // 每个路由都需要映射到一个组件。
 // 我们后面再讨论嵌套路由。
 const routes = [
-  // { path: '/', component: ()=> import('../views/Home.vue') },
-  { path: '/', component: ()=> import('../components/OLShow.vue') },
-  // { path: '/hello', component: ()=> import("../components/HelloWorld.vue") },
-  // { path: '/first', component: () => import("../components/FirstCesiumApp.vue")},
-  // { path: '/learn', component: () => import("../components/LearnCesium.vue")},
-  { path: '/base', component: () => import("../components/BaseCesium.vue")},
+  // { path: '/', component: ()=> import('../components/OLShow.vue') },
+  { path: '/', component: ()=> import('../views/openlayersShow/OLShow.vue') },
+
   { path: '/openHot', component: () => import("../components/openLayersHot.vue")},
   { path: '/OlBase', component: () => import("../components/openLayerBase.vue")},
   { path: '/OlVector', component: () => import("../components/OLVectorMap.vue")},
@@ -26,7 +23,7 @@ const routes = [
   { path: '/OLOms', component: () => import("../components/OLMapOSM.vue")},
   { path: '/Tencent', component: () => import("../components/OLTencentMap.vue")},
   { path: '/MapAdj', component: () => import("../components/OLMapsAdj.vue")},
-  { path: '/show', component: () => import("../components/OLShow.vue")},
+  { path: '/show', component: () => import("../components/OLShow-demo.vue")},
   { path: '/draw', component: () => import("../components/OLDrawGps.vue")},
 ]
 // 3. 创建路由实例并传递 `routes` 配置

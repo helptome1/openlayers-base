@@ -8,7 +8,7 @@ ul,
 li {
   list-style: none;
 }
-
+/* el-tabs */
 .el-tabs__item {
   color: #ccc !important;
   font-size: 17px !important;
@@ -19,16 +19,29 @@ li {
   color: #409eff !important;
 }
 
-/* .el-tabs__nav {
-  transform: translateX(15px) !important;
-} */
-
-.el-switch--small .el-switch__label * {
-  font-size: 18px !important;
-}
-
-
 .el-tabs__nav-next,
 .el-tabs__nav-prev {
   color: #fff !important;
+}
+
+/* el-switch */
+.el-switch--large .el-switch__label * {
+  font-size: 18px;
+}
+
+.el-switch {
+  line-height: 1.5;
+}
+
+.el-switch__label {
+  color: #ccc;
+  font-size: 18px;
+}
+
+.el-switch__label.is-active {
+  color: #fff;
+}
+
+.el-switch--small .el-switch__label * {
+  font-size: 18px !important;
 }

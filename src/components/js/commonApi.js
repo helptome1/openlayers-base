@@ -82,7 +82,7 @@ for (let z = 0; z < 19; ++z) {
  * @param {*} format 图片格式
  * @returns 
  */
-function addTdtWmtsLayer(map, url, tk, layerName, matrixSet, format) {
+function addTdtWmtsLayer(map, url, tk, layerName, matrixSet, format, opacity) {
   let source = new WMTS({
     url: `${url}${tk}`,
     layer: layerName,
@@ -99,7 +99,7 @@ function addTdtWmtsLayer(map, url, tk, layerName, matrixSet, format) {
   })
   let layer = new TileLayer({
     source: source,
-    opacity: 0.1
+    opacity: opacity
   })
   map.addLayer(layer);
   return layer;
@@ -133,7 +133,7 @@ function reverseFunc(pixelsTemp) {
  * 转换天地图主题颜色
  * @param {*} layer 图层
  */
-function changeTheme(map, Tilelayer) {
+function changeTheme(Tilelayer) {
   //openlayer 像素转换类，可以直接当做source使用
   const raster = new RasterSource({
     sources: [
@@ -168,7 +168,7 @@ function changeTheme(map, Tilelayer) {
  * @param {*} map 地图
  * @returns 图层信息
  */
-function addOSMLayer(map) {
+function addOSMLayer() {
   let OSMLayer = new TileLayer({
     source: new OSM(),
   })
@@ -179,7 +179,7 @@ function addOSMLayer(map) {
  * 添加百度地图图层
  * @param {*} map 地图
  */
-function addBaiduLayer(map) {
+function addBaiduLayer() {
   var resolutions2 = [];
   var maxZoom = 18;
 
@@ -230,15 +230,17 @@ function addBaiduLayer(map) {
 }
 
 // 增加XYZ格式的地图服务图层
-function addXYZLayer(map, url, projection = "EPSG:3857") {
+function addXYZLayer(url, projection = "EPSG:3857", zIndex = 0, opacity = 1) {
   let source = new XYZ({
     url: url,
     projection: projection,
     wrapX: true,
-    crossOrigin: 'anonymous'
+    // crossOrigin: 'anonymous'
   })
   let layer = new TileLayer({
-    source: source
+    source: source,
+    zIndex: zIndex,
+    opacity: opacity
   })
   // map.addLayer(layer);
   return layer;
@@ -252,7 +254,7 @@ function addXYZLayer(map, url, projection = "EPSG:3857") {
  * @param {*} extent 加载范围
  * @returns 图层
  */
-function addWMSLayer(map, url, layerName, extent = null) {
+function addWMSLayer(url, layerName, extent = null) {
   let source = new TileWMS({
     url: url,
     // params: {
@@ -275,7 +277,7 @@ function addWMSLayer(map, url, layerName, extent = null) {
  * @param {*} url wmts服务地址
  * @returns 
  */
-function addWmtsLayer(map, url, tk = '', layerName = '', matrixSet = '', format = '') {
+function addWmtsLayer(url, tk = '', layerName = '', matrixSet = '', format = '') {
   let layer = new TileLayer({
     source: new WMTS({
       url: `${url}${tk != '' ? tk : ''}`,
