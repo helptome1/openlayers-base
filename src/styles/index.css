@@ -1,0 +1,11 @@
+@import 'ol/ol.css';
+
+* {
+  margin: 0;
+  padding: 0;
+}
+
+/* #app {
+  width: 100vh;
+  height: 100vh;
+} */
