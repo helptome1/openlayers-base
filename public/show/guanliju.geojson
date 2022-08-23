@@ -1,0 +1,366 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "id": 13042,
+      "bbox": [
+        103.69102676,
+        30.62339974,
+        103.69102676,
+        30.62339974
+      ],
+      "properties": {
+        "code": "p001",
+        "cId": [
+          "w009",
+          "w010"
+        ],
+        "type": "company",
+        "name": "红星电镀有限公司"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          103.69102676,
+          30.62339974
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": 13203,
+      "bbox": [
+        103.96304215,
+        30.68500152,
+        103.96304215,
+        30.68500152
+      ],
+      "properties": {
+        "code": "p002",
+        "cId": [
+          "w001",
+          "w002"
+        ],
+        "type": "company",
+        "name": "华鑫通用机械有限公司"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          103.96304215,
+          30.68500152
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": 13433,
+      "bbox": [
+        104.08640978,
+        30.5921885,
+        104.08640978,
+        30.5921885
+      ],
+      "properties": {
+        "code": "p003",
+        "cId": [
+          "w003",
+          "w008"
+        ],
+        "type": "company",
+        "name": "武侯产业发展投资管理集团有限公司"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          104.08640978,
+          30.5921885
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": 13864,
+      "bbox": [
+        104.26296766,
+        30.56085441,
+        104.26296766,
+        30.56085441
+      ],
+      "properties": {
+        "code": "p004",
+        "cId": [
+          "w012",
+          "w013"
+        ],
+        "type": "company",
+        "name": "长虹家电"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          104.26296766,
+          30.56085441
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": 14891,
+      "bbox": [
+        104.3736733,
+        31.11206025,
+        104.3736733,
+        31.11206025
+      ],
+      "properties": {
+        "code": "p005",
+        "cId": [
+          "w0014",
+          "w015"
+        ],
+        "type": "company",
+        "name": "长虹家电"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          104.3736733,
+          31.11206025
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": 15934,
+      "bbox": [
+        105.38979069,
+        30.85157452,
+        105.38979069,
+        30.85157452
+      ],
+      "properties": {
+        "code": "p006",
+        "cId": [
+          "w019"
+        ],
+        "type": "company",
+        "name": "宜宾华威电声有限公司"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.38979069,
+          30.85157452
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": 16794,
+      "bbox": [
+        105.59612353,
+        30.53102034,
+        105.59612353,
+        30.53102034
+      ],
+      "properties": {
+        "code": "p007",
+        "cId": [
+          "w020"
+        ],
+        "type": "company",
+        "name": "攀枝花市鸿硕工贸有限公司 "
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.59612353,
+          30.53102034
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": 18988,
+      "bbox": [
+        105.9628617,
+        32.32320575,
+        105.9628617,
+        32.32320575
+      ],
+      "properties": {
+        "code": "p008",
+        "cId": [
+          "w018"
+        ],
+        "type": "company",
+        "name": "成都市团结电力结构厂"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.9628617,
+          32.32320575
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": 20163,
+      "properties": {
+        "code": "p009",
+        "cId": [
+          "w004",
+          "w005"
+        ],
+        "type": "company",
+        "name": "成都科尔达皮业有限责任公司"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          104.68017333,
+          31.46642731
+        ]
+      },
+      "bbox": [
+        104.68017333,
+        31.46642731,
+        104.68017333,
+        31.46642731
+      ]
+    },
+    {
+      "type": "Feature",
+      "id": 24428,
+      "properties": {
+        "_draw_type": "point",
+        "code": "p010",
+        "cId": [
+          "w017"
+        ],
+        "type": "company",
+        "name": "成都市千瑞达制革有限责任公司"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.52524339,
+          32.2876957
+        ]
+      },
+      "bbox": [
+        105.52524339,
+        32.2876957,
+        105.52524339,
+        32.2876957
+      ]
+    },
+    {
+      "type": "Feature",
+      "id": 25135,
+      "properties": {
+        "_draw_type": "point",
+        "code": "p011",
+        "cId": [
+          "w016"
+        ],
+        "type": "company",
+        "name": "华福润滑油厂"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          106.77292215,
+          30.36607108
+        ]
+      },
+      "bbox": [
+        106.77292215,
+        30.36607108,
+        106.77292215,
+        30.36607108
+      ]
+    },
+    {
+      "type": "Feature",
+      "id": 26221,
+      "properties": {
+        "_draw_type": "point",
+        "code": "p012",
+        "cId": [
+          "w011"
+        ],
+        "type": "company",
+        "name": "成都宁江昭和汽车零部件有限公司"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          103.50672466,
+          30.1968927
+        ]
+      },
+      "bbox": [
+        103.50672466,
+        30.1968927,
+        103.50672466,
+        30.1968927
+      ]
+    },
+    {
+      "type": "Feature",
+      "id": 28110,
+      "properties": {
+        "_draw_type": "point",
+        "code": "p013",
+        "cId": [
+          "w007"
+        ],
+        "type": "company",
+        "name": "四川宁江山川机械有限责任公司"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          101.71958507,
+          26.58194007
+        ]
+      },
+      "bbox": [
+        101.71958507,
+        26.58194007,
+        101.71958507,
+        26.58194007
+      ]
+    },
+    {
+      "type": "Feature",
+      "id": 28467,
+      "properties": {
+        "_draw_type": "point",
+        "code": "p014",
+        "cId": [
+          "w006"
+        ],
+        "type": "company",
+        "name": "德阳市锦程化工有限公司"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          104.64464493,
+          28.75175324
+        ]
+      },
+      "bbox": [
+        104.64464493,
+        28.75175324,
+        104.64464493,
+        28.75175324
+      ]
+    }
+  ]
+}

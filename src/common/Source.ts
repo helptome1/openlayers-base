@@ -1,4 +1,5 @@
-import { OSM, XYZ } from 'ol/source'
+import { OSM, Vector, XYZ } from 'ol/source'
+import GeoJSON from 'ol/format/GeoJSON'
 
 // osm
 const OSMSource = new OSM()
@@ -19,7 +20,11 @@ function XYZSource(URL: string, projection = 'EPSG:3857') {
 }
 
 // 添加多个图层
+function VectorSource(url: string) {
+  return new Vector({
+    url: url,
+    format: new GeoJSON()
+  })
+}
 
-
-
-export { OSMSource, googleSource }
+export { OSMSource, googleSource, VectorSource }
