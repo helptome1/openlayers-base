@@ -6,6 +6,9 @@ import TileSource from 'ol/source/Tile'
 import Style from 'ol/style/Style'
 import Stroke from 'ol/style/Stroke'
 import Fill from 'ol/style/Fill'
+import Icon from 'ol/style/Icon'
+
+import watchImg from '/images/watch1.png'
 
 // TileLayer
 function createTileLayer(source: TileSource, zIndex) {
@@ -26,23 +29,29 @@ function createVectorLayer(VectorName = 'geojson', url: string, strokeColor = ''
   })
   return layer
 }
+
 // VectorStyle
 function VectorStyle(VectorName: string, strokeColor: string, fillColor: string) {
   return function (feature, state) {
-    if (VectorName === 'province') {
-      return StrokeStyle(strokeColor)
-    } else {
-      return StrokeStyle(strokeColor).concat(fillStyle(fillColor))
+    switch (VectorName) {
+      case 'province':
+        return StrokeStyle(strokeColor)
+      case 'pollute':
+        return StrokeStyle(strokeColor).concat(fillStyle(fillColor))
+      case 'supervise':
+        return pointStyle(watchImg, 0.8)
+      default:
+        break
     }
   }
 }
 
-const StrokeStyle = function (strokeColor: string) {
+const StrokeStyle = function (strokeColor: string, width = 2) {
   return [
     new Style({
       stroke: new Stroke({
         color: strokeColor,
-        width: 2
+        width: width
       })
     })
   ]
@@ -58,6 +67,23 @@ const fillStyle = function (fillColor: string): Style[] {
   ]
 }
 
+const pointStyle = function (src: string, scale: number, offset = [0, 0]) {
+  return [
+    new Style({
+      image: new Icon({
+        src: src,
+        anchor: [0.5, 60],
+        anchorOrigin: 'top-right',
+        anchorXUnits: 'fraction',
+        anchorYUnits: 'pixels',
+        offsetOrigin: 'top-left',
+        offset: offset,
+        scale: scale
+      })
+    })
+  ]
+}
+
 // OSM
 const OSMLayer: BaseLayer = createTileLayer(OSMSource, 1)
 
@@ -67,6 +93,18 @@ const googleLayer: BaseLayer = createTileLayer(googleSource, 1)
 // provinceLayer
 const provinceLayer = createVectorLayer('province', '/show/sichuan.geojson', 'yellow', '', 2)
 
-let layerList: BaseLayer[] = [googleLayer, provinceLayer]
+// polluteLayer
+const polluteLayer = createVectorLayer(
+  'pollute',
+  '/show/polluteArea.geojson',
+  'rgba(255, 109, 109,1)',
+  'rgba(255, 109, 109,0.3)',
+  2
+)
+
+// SuperviseLayer
+const superviseLayer = createVectorLayer('supervise', '/show/guanliju.geojson', '', '', 3)
+
+let layerList: BaseLayer[] = [googleLayer, provinceLayer, polluteLayer, superviseLayer]
 
 export { layerList, createVectorLayer }
