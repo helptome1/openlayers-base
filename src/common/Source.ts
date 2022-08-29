@@ -5,10 +5,10 @@ import GeoJSON from 'ol/format/GeoJSON'
 const OSMSource = new OSM()
 
 // GoogleMap
-
 const googleSource = XYZSource(
   'http://gac-geo.googlecnapps.cn/maps/vt?lyrs=s,h&hl=zh-CN&gl=CN&x={x}&y={y}&z={z}&src=app&scale=2'
 )
+
 // xyz
 function XYZSource(URL: string, projection = 'EPSG:3857') {
   let source = new XYZ({
@@ -19,11 +19,23 @@ function XYZSource(URL: string, projection = 'EPSG:3857') {
   return source
 }
 
-// 添加多个图层
-function VectorSource(url: string) {
+// vectorSource
+// function VectorSource(url: string) {
+//   console.log("url", url)
+//   const vSource = new Vector({
+//     url: url,
+//     format: new GeoJSON(),
+//   })
+//   return vSource
+// }
+
+function VectorSource(src: any) {
   return new Vector({
-    url: url,
-    format: new GeoJSON()
+    features: new GeoJSON().readFeatures(src, {
+      //readFeature可以重新设置坐标系
+      dataProjection: 'EPSG:4326', // 设定JSON数据使用的坐标系
+      featureProjection: 'EPSG:3857' // 设定当前地图使用的feature的坐标系
+    })
   })
 }
 

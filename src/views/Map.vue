@@ -13,7 +13,7 @@
   import { createMap } from '@/common/Map'
 
   // layer
-  import { layerList } from '@/common/Layer'
+  import { layerList, provinceLayer, polluteLayer } from '@/common/Layer'
 
   const mapEle = ref(null)
   const map = ref(null)
@@ -27,6 +27,12 @@
   const init = () => {
     // 初始化map
     map.value = createMap(view, layers)
+
+    // province
+    provinceLayer(map.value)
+
+    // polluteLayer
+    polluteLayer(map.value)
   }
 
   onMounted(() => {
