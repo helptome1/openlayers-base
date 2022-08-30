@@ -29,7 +29,7 @@ function XYZSource(URL: string, projection = 'EPSG:3857') {
 //   return vSource
 // }
 
-function VectorSource(src: any) {
+function VectorSourceCustom(src: any) {
   return new Vector({
     features: new GeoJSON().readFeatures(src, {
       //readFeature可以重新设置坐标系
@@ -39,4 +39,4 @@ function VectorSource(src: any) {
   })
 }
 
-export { OSMSource, googleSource, VectorSource }
+export { OSMSource, googleSource, VectorSourceCustom }

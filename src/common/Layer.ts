@@ -1,6 +1,6 @@
 import BaseLayer from 'ol/layer/Base'
 import { Tile as TileLayer, Vector as VectorLayer } from 'ol/layer'
-import { OSMSource, googleSource, VectorSource } from './Source'
+import { OSMSource, googleSource, VectorSourceCustom } from './Source'
 
 import TileSource from 'ol/source/Tile'
 import Style from 'ol/style/Style'
@@ -16,6 +16,7 @@ import watchImg from '/images/watch1.png'
 import farmImg from '/images/farm-use1.png'
 import farmControlImg from '/images/farm-control1.png'
 import farmSafeImg from '/images/farm-safe.png'
+import VectorSource from 'ol/source/Vector'
 
 // TileLayer
 function createTileLayer(source: TileSource, zIndex) {
@@ -29,7 +30,7 @@ function createTileLayer(source: TileSource, zIndex) {
 function createVectorLayer(VectorName = 'geojson', src: any, strokeColor = '', fillColor = '', zIndex = 1) {
   const layer = new VectorLayer({
     className: VectorName,
-    source: VectorSource(src),
+    source: VectorSourceCustom(src),
     opacity: 1,
     zIndex: zIndex,
     style: VectorStyle(VectorName, strokeColor, fillColor)
@@ -123,20 +124,26 @@ const polluteLayer = function (map: Map) {
 }
 
 // SuperviseLayer
-// const superviseLayer = createVectorLayer('supervise', '/show/guanliju.geojson', '', '', 3)
+const superviseLayer = function (map: Map) {
+  requestData('/show/guanliju.geojson', (src: any) => {
+    const layer = createVectorLayer('supervise', src.data, '', '', 3)
+    map.addLayer(layer)
+  })
+}
 
-// // farmLayer
-// const farmLayer = createVectorLayer(
-//   'farmland',
-//   '/show/farmland.geojson',
-//   'rgba(50, 224, 169, 1)',
-//   'rgba(50, 224, 169, 0.3)',
-//   4
-// )
+
+// farmLayer
+const farmLayer = function (map: Map) {
+  requestData('/show/farmland.geojson', (src: any) => {
+    const layer = createVectorLayer('pollute', src.data, 'rgba(50, 224, 169, 1)', 'rgba(50, 224, 169, 0.3)', 4)
+    map.addLayer(layer)
+    signFarmLayer(layer)
+  })
+}
 
 // sign diffener farmlayer
-function signFarmLayer(item) {
-  const features = item.getSource().getFeatures()
+function signFarmLayer(layer: VectorLayer<VectorSource>) {
+  const features = layer.getSource().getFeatures()
 
   features.forEach((feature: Feature) => {
     const level = feature.get('level')
@@ -167,4 +174,4 @@ let layerList: BaseLayer[] = [googleLayer]
 
 // Set farmLayer color
 
-export { layerList, createVectorLayer, signFarmLayer, provinceLayer, polluteLayer }
+export { layerList, createVectorLayer, signFarmLayer, provinceLayer, polluteLayer, superviseLayer, farmLayer }

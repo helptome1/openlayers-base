@@ -13,7 +13,7 @@
   import { createMap } from '@/common/Map'
 
   // layer
-  import { layerList, provinceLayer, polluteLayer } from '@/common/Layer'
+  import { layerList, provinceLayer, polluteLayer, superviseLayer, farmLayer } from '@/common/Layer'
 
   const mapEle = ref(null)
   const map = ref(null)
@@ -33,6 +33,12 @@
 
     // polluteLayer
     polluteLayer(map.value)
+
+    // superviseLayer
+    superviseLayer(map.value)
+
+    // farmLayer
+    farmLayer(map.value)
   }
 
   onMounted(() => {
