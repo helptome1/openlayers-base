@@ -8,6 +8,7 @@ export {}
 declare module '@vue/runtime-core' {
   export interface GlobalComponents {
     HelloWorld: typeof import('./src/components/HelloWorld.vue')['default']
+    Legend: typeof import('./src/components/Legend.vue')['default']
     Map: typeof import('./src/views/Map.vue')['default']
   }
 }

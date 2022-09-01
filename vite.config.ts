@@ -18,7 +18,7 @@ export default defineConfig({
     }),
     Components({
       // dirs choose the folder
-      dirs: ['src/compoenets', 'src/views'],
+      dirs: ['src/components', 'src/views'],
       resolvers: [ElementPlusResolver()],
     })
   ],

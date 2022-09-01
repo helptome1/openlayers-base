@@ -5,7 +5,6 @@
   padding: 0;
 }
 
-/* #app {
-  width: 100vh;
-  height: 100vh;
-} */
+ul li {
+  list-style: none;
+}

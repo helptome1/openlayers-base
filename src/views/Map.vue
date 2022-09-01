@@ -1,9 +1,12 @@
 <template>
-  <div id="map" ref="mapEle"></div>
+  <div id="map" ref="mapEle">
+    <Legend></Legend>
+  </div>
 </template>
 
 <script setup lang="ts">
   import { View } from 'ol'
+  
   import BaseLayer from 'ol/layer/Base'
 
   // viewOptions
@@ -48,6 +51,7 @@
 
 <style scoped>
   #map {
+    position: absolute;
     width: 100%;
     height: 800px;
   }
