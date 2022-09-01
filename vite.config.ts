@@ -1,8 +1,9 @@
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
-import AutoImport from 'unplugin-auto-import/vite'
 import { resolve } from 'path'
 import Components from 'unplugin-vue-components/vite'
+import AutoImport from 'unplugin-auto-import/vite'
+import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -12,10 +13,13 @@ export default defineConfig({
       /* options */
       include: [/\.vue$/, /\.vue\?vue/],
       imports: ['vue'],
-      dts: "src/auto-imports.d.ts"
+      dts: "src/auto-imports.d.ts",
+      resolvers: [ElementPlusResolver()],
     }),
     Components({
-      dirs: ['src/compoenets', 'src/views']
+      // dirs choose the folder
+      dirs: ['src/compoenets', 'src/views'],
+      resolvers: [ElementPlusResolver()],
     })
   ],
   resolve: {
