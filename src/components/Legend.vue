@@ -2,7 +2,7 @@
   <div class="show-list">
     <ul>
       <li
-        v-for="(item, index) in layerList.list"
+        v-for="(item, index) in layerList.landList"
         :key="index"
         :class="{ active: item.visible }"
         @click="isVisible(item)"
@@ -14,17 +14,9 @@
           {{ item.name }}
         </span>
         <div class="tip" v-if="index == 1 && isShowTip">
-          <div>
-            <img class="show-list-img" src="/image/farm-safe.png" alt="" />
-            优先保护类
-          </div>
-          <div>
-            <img class="show-list-img" src="/image/farm-control1.png" alt="" />
-            严格管控类
-          </div>
-          <div>
-            <img class="show-list-img" src="/image/farm-use1.png" alt="" />
-            安全利用类
+          <div v-for="farm in layerList.farmList">
+            <img class="show-list-img" :src="farm.img" alt="" />
+            {{ farm.name }}
           </div>
         </div>
       </li>
@@ -37,8 +29,12 @@
   import farmImg from '/images/farm-use1.png'
   import watchImg from '/images/watch1.png'
 
+  import farmSafe from '/images/farm-safe.png'
+  import farmControl from '/images/farm-control1.png'
+  import farmUse from '/images/farm-use1.png'
+
   const layerList = reactive({
-    list: [
+    landList: [
       {
         name: '污染地块(6)',
         value: 'polluteLayer',
@@ -60,11 +56,29 @@
         color: '#20a2f4',
         icon: watchImg
       }
+    ],
+    farmList: [
+      {
+        name: '优先保护类',
+        img: farmSafe
+      },
+      {
+        name: '严格管控类',
+        img: farmControl
+      },
+      {
+        name: '安全利用类',
+        img: farmUse
+      }
     ]
   })
   const isShowTip = ref(false)
   const isVisible = function (item) {}
-  const showTip = function (index: number) {}
+  const showTip = function (index: number) {
+    if (index === 1) {
+      this.isShowTip = !this.isShowTip
+    }
+  }
 </script>
 
 <style lang="less" scoped>
