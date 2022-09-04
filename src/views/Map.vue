@@ -1,6 +1,6 @@
 <template>
   <div id="map" ref="mapEle">
-    <Legend></Legend>
+    <Legend :map="map"></Legend>
   </div>
 </template>
 

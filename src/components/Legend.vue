@@ -32,26 +32,32 @@
   import farmSafe from '/images/farm-safe.png'
   import farmControl from '/images/farm-control1.png'
   import farmUse from '/images/farm-use1.png'
+  import { Map } from 'ol'
+
+  // props
+  const props = defineProps({
+    map: Map
+  })
 
   const layerList = reactive({
     landList: [
       {
         name: '污染地块(6)',
-        value: 'polluteLayer',
+        value: 'pollute',
         visible: true,
         color: 'rgba(255, 109, 109,1)',
         icon: polluteImg
       },
       {
         name: '农用地块(14)',
-        value: 'farmlandLayer',
+        value: 'farmland',
         visible: true,
         color: '#32e0a9',
         icon: farmImg
       },
       {
         name: '重点监管单位(13)',
-        value: 'superviseLayer',
+        value: 'supervise',
         visible: true,
         color: '#20a2f4',
         icon: watchImg
@@ -72,8 +78,24 @@
       }
     ]
   })
+
   const isShowTip = ref(false)
-  const isVisible = function (item) {}
+
+  /**
+   * control the land visible.
+   */
+  const isVisible = function (item) {
+    const layers = props.map.getLayers().getArray()
+    const theLayer = layers.find((layer) => {
+      return layer.get('name') === item.value
+    })
+    theLayer.setVisible(!item.visible)
+    item.visible = !item.visible
+  }
+
+  /**
+   * show the farmland flag.
+   */
   const showTip = function (index: number) {
     if (index === 1) {
       this.isShowTip = !this.isShowTip

@@ -29,7 +29,9 @@ function createTileLayer(source: TileSource, zIndex) {
 // VectorLayer
 function createVectorLayer(VectorName = 'geojson', src: any, strokeColor = '', fillColor = '', zIndex = 1) {
   const layer = new VectorLayer({
-    className: VectorName,
+    properties: {
+      name: VectorName
+    },
     source: VectorSourceCustom(src),
     opacity: 1,
     zIndex: zIndex,
@@ -131,11 +133,10 @@ const superviseLayer = function (map: Map) {
   })
 }
 
-
 // farmLayer
 const farmLayer = function (map: Map) {
   requestData('/show/farmland.geojson', (src: any) => {
-    const layer = createVectorLayer('pollute', src.data, 'rgba(50, 224, 169, 1)', 'rgba(50, 224, 169, 0.3)', 4)
+    const layer = createVectorLayer('farmland', src.data, 'rgba(50, 224, 169, 1)', 'rgba(50, 224, 169, 0.3)', 4)
     map.addLayer(layer)
     signFarmLayer(layer)
   })
