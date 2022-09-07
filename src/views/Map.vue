@@ -6,14 +6,14 @@
 
 <script setup lang="ts">
   import { View } from 'ol'
-  
+
   import BaseLayer from 'ol/layer/Base'
 
   // viewOptions
   import { viewOptions } from '@/common/View'
 
   // map
-  import { createMap } from '@/common/Map'
+  import { createMap, addInteraction } from '@/common/Map'
 
   // layer
   import { layerList, provinceLayer, polluteLayer, superviseLayer, farmLayer } from '@/common/Layer'
@@ -42,6 +42,11 @@
 
     // farmLayer
     farmLayer(map.value)
+
+    // interaction
+    const interaction = addInteraction()
+
+    map.value.addInteraction(interaction)
   }
 
   onMounted(() => {

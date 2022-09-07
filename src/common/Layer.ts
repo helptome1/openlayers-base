@@ -52,20 +52,20 @@ function VectorStyle(VectorName: string, strokeColor: string, fillColor: string)
   return function () {
     switch (VectorName) {
       case 'province':
-        return StrokeStyle(strokeColor)
+        return strokeStyle(strokeColor)
       case 'pollute':
-        return StrokeStyle(strokeColor).concat(fillStyle(fillColor))
+        return strokeStyle(strokeColor).concat(fillStyle(fillColor))
       case 'supervise':
         return pointStyle(watchImg, 0.8)
       case 'farmland':
-        return StrokeStyle(strokeColor).concat(fillStyle(fillColor))
+        return strokeStyle(strokeColor).concat(fillStyle(fillColor))
       default:
         break
     }
   }
 }
 
-const StrokeStyle = function (strokeColor: string, width = 2) {
+export const strokeStyle = function (strokeColor: string, width = 2) {
   return [
     new Style({
       stroke: new Stroke({
@@ -76,7 +76,7 @@ const StrokeStyle = function (strokeColor: string, width = 2) {
   ]
 }
 
-const fillStyle = function (fillColor: string): Style[] {
+export const fillStyle = function (fillColor: string): Style[] {
   return [
     new Style({
       fill: new Fill({
@@ -86,7 +86,7 @@ const fillStyle = function (fillColor: string): Style[] {
   ]
 }
 
-const pointStyle = function (src: string, scale: number, offset = [0, 0]) {
+export const pointStyle = function (src: string, scale: number, offset = [0, 0]) {
   return [
     new Style({
       image: new Icon({
@@ -165,7 +165,7 @@ function signFarmLayer(layer: VectorLayer<VectorSource>) {
       imgSrc = farmImg
     }
 
-    feature.setStyle(StrokeStyle(strokeColor).concat(fillStyle(fillColor)))
+    feature.setStyle(strokeStyle(strokeColor).concat(fillStyle(fillColor)))
     // add point in farmLayer
   })
 }
