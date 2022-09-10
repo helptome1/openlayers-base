@@ -5,7 +5,6 @@ import Select from 'ol/interaction/Select'
 import { pointerMove } from 'ol/events/condition'
 import Style from 'ol/style/Style'
 
-import { strokeStyle, fillStyle } from './Layer'
 import Stroke from 'ol/style/Stroke'
 import Fill from 'ol/style/Fill'
 import Text from 'ol/style/Text'
